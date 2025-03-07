@@ -1,0 +1,82 @@
+{
+    "name": "hevi",
+    "version": "0.0.0",
+    "description": "A library to set & bump versions in helm charts",
+    "author": {
+        "name": "Peter Placzek",
+        "email": "contact@tada5hi.net",
+        "url": "https://github.com/tada5hi"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tada5hi/hevi.git"
+    },
+    "main": "dist/index.cjs",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "bin",
+        "dist"
+    ],
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "scripts": {
+        "build:types": "tsc --emitDeclarationOnly",
+        "build:js": "rollup -c",
+        "build": "rimraf dist && rimraf bin && npm run build:types && npm run build:js",
+        "build:watch": "npm run build -- --watch",
+        "commit": "npx git-cz",
+        "test": "jest --config ./test/jest.config.js",
+        "test:coverage": "cross-env NODE_ENV=test jest --config ./test/jest.config.js --coverage",
+        "lint": "eslint --ext .js,.vue,.ts ./src",
+        "lint:fix": "npm run lint -- --fix",
+        "prepare": "husky install",
+        "dev": "ts-node src/cli.ts",
+        "start": "node dist/cli.cjs"
+    },
+    "keywords": [],
+    "bin": {
+        "hevi": "dist/cli.cjs",
+        "hevi-esm": "dist/cli.mjs"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "citty": "^0.1.6",
+        "consola": "^3.4.0",
+        "dotenv": "^16.4.7",
+        "fast-glob": "^3.3.3",
+        "locter": "^2.1.6",
+        "semver": "^7.7.1",
+        "yaml": "^2.7.0"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^16.0.0",
+        "@rollup/plugin-swc": "^0.4.0",
+        "@swc/core": "^1.11.7",
+        "@swc/jest": "^0.2.37",
+        "@tada5hi/commitlint-config": "^1.2.4",
+        "@tada5hi/eslint-config-typescript": "^1.2.15",
+        "@tada5hi/semantic-release": "^0.3.2",
+        "@tada5hi/tsconfig": "^0.6.0",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.10.10",
+        "@types/semver": "^7.5.8",
+        "cross-env": "^7.0.3",
+        "eslint": "^8.54.0",
+        "husky": "^9.1.7",
+        "jest": "^29.7.0",
+        "rollup": "^4.34.9",
+        "semantic-release": "^22.0.8",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.2"
+    }
+}
