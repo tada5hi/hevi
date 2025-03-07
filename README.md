@@ -1,4 +1,6 @@
-# hevi 📦
+# Hevi 🛳️
+
+**H**elm **V**ersioner
 
 [![npm version](https://badge.fury.io/js/hevi.svg)](https://badge.fury.io/js/hevi)
 [![Master Workflow](https://github.com/Tada5hi/hevi/workflows/CI/badge.svg)](https://github.com/Tada5hi/hevi)
@@ -8,7 +10,7 @@
 **Table of Contents**
 - [Installation](#installation)
 - [Usage](#usage)
-- 
+
 ## Installation
 
 ```bash
