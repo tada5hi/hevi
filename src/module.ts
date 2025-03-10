@@ -7,14 +7,21 @@
 
 import { getOctokit } from '@actions/github';
 import path from 'node:path';
+import process from 'node:process';
 import type { ExecuteOptions } from './types';
 import { setGithubClientFactory } from './github';
 import type { HelmChart } from './helm';
 import {
     bumpHelmChartVersion,
-    findHelmCharts, serializeHelmChart, setHelmChartVersion, writeHelmCharts,
+    findHelmCharts,
+    serializeHelmChart,
+    setHelmChartVersion,
+    writeHelmCharts,
 } from './helm';
 import { changeGithubFileContent } from './github/file';
+import { Provider } from './constants';
+import { executeGitCommit, executeGitPush } from './git';
+import type { GitCommitOptions } from './git';
 
 export async function execute(options: ExecuteOptions) : Promise<HelmChart[]> {
     const cwd = options.cwd || process.cwd();
@@ -22,8 +29,35 @@ export async function execute(options: ExecuteOptions) : Promise<HelmChart[]> {
 
     const directoryPath = path.join(cwd, directory);
 
-    if (options.githubToken) {
-        setGithubClientFactory(() => getOctokit(options.githubToken!));
+    let { provider } = options;
+    if (!provider && (process.env.GITHUB_TOKEN || process.env.GH_TOKEN)) {
+        provider = Provider.GITHUB;
+    }
+
+    if (provider === Provider.GITHUB) {
+        /**
+         * @see https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts
+         */
+
+        if (!options.branch) {
+            options.branch = process.env.GITHUB_REF;
+        }
+
+        if (
+            !options.commitUserEmail &&
+            !options.commitUserName
+        ) {
+            options.commitUserEmail = 'github-actions[bot]';
+            options.commitUserName = '41898282+github-actions[bot]@users.noreply.github.com';
+        }
+
+        if (!options.token) {
+            options.token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+        }
+
+        if (options.token) {
+            setGithubClientFactory(() => getOctokit(options.token!));
+        }
     }
 
     const charts = await findHelmCharts({
@@ -40,22 +74,48 @@ export async function execute(options: ExecuteOptions) : Promise<HelmChart[]> {
 
     if (
         options.commit &&
-        options.push &&
-        options.githubToken
+        options.push
     ) {
-        for (let i = 0; i < charts.length; i++) {
-            await changeGithubFileContent({
-                content: serializeHelmChart(charts[i]),
-                path: charts[i].hevi.path,
-                message: `feat: update helm chart ${charts[i].hevi.path} version (${charts[i].version}) & appVersion (${charts[i].appVersion})`,
-            });
+        if (
+            options.token &&
+            provider === Provider.GITHUB
+        ) {
+            for (let i = 0; i < charts.length; i++) {
+                await changeGithubFileContent({
+                    content: serializeHelmChart(charts[i]),
+                    path: charts[i].hevi.path,
+                    message: `feat: update helm chart ${charts[i].hevi.path} version (${charts[i].version}) & appVersion (${charts[i].appVersion})`,
+                });
+            }
         }
     }
 
     if (options.commit) {
         await writeHelmCharts(charts);
 
-        // todo: git commit
+        if (!options.commitUserEmail || !options.commitUserName) {
+            // todo: log message
+            return charts;
+        }
+
+        const commitOptions : GitCommitOptions = {
+            cwd,
+            message: 'chore: update helm charts',
+            userName: options.commitUserName,
+            userEmail: options.commitUserEmail,
+            author: options.commitAuthor ?
+                options.commitAuthor :
+                options.commitUserName,
+        };
+
+        await executeGitCommit(commitOptions);
+
+        if (options.push) {
+            await executeGitPush({
+                cwd,
+                branch: options.branch,
+            });
+        }
     }
 
     return charts;

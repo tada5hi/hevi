@@ -9,7 +9,7 @@ import { defineCommand } from 'citty';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { HelmVersionType } from '../constants';
+import { HelmVersionType, Provider } from '../constants';
 import { execute } from '../module';
 
 export async function createCLIEntryPointCommand() {
@@ -35,20 +35,40 @@ export async function createCLIEntryPointCommand() {
                 type: 'string',
                 description: 'Relative directory path (default: .)',
             },
+            branch: {
+                type: 'string',
+                description: 'Branch',
+            },
             commit: {
                 type: 'boolean',
                 description: 'Commit git changes',
                 default: false,
+            },
+            commitUserName: {
+                type: 'string',
+                description: 'Commit user name',
+            },
+            commitUserEmail: {
+                type: 'string',
+                description: 'Commit user email',
+            },
+            commitAuthor: {
+                type: 'string',
+                description: 'Commit author',
             },
             push: {
                 type: 'boolean',
                 description: 'Push git changes',
                 default: false,
             },
-            githubToken: {
+            token: {
                 type: 'string',
-                description: 'GitHub token',
-                default: process.env.GITHUB_TOKEN || process.env.GH_TOKEN,
+                description: 'Git token',
+            },
+            provider: {
+                type: 'string',
+                default: Provider.GITHUB,
+                options: Object.values(Provider),
             },
             version: {
                 type: 'string',
@@ -65,8 +85,12 @@ export async function createCLIEntryPointCommand() {
                 directory: ctx.args.directory,
                 version: ctx.args.version,
                 versionType: ctx.args.versionType,
-                githubToken: ctx.args.githubToken,
+                token: ctx.args.token,
+                branch: ctx.args.branch,
                 commit: ctx.args.commit,
+                commitUserEmail: ctx.args.commitUserEmail,
+                commitUserName: ctx.args.commitUserName,
+                commitAuthor: ctx.args.commitAuthor,
                 push: ctx.args.push,
             });
 

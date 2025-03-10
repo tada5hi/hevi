@@ -21,9 +21,29 @@ export type ExecuteOptions = {
     directory?: string,
 
     /**
+     * Git branch.
+     */
+    branch?: string,
+
+    /**
      * default: true
      */
     commit?: boolean,
+
+    /**
+     * default: github-actions[bot]
+     */
+    commitUserName?: string,
+
+    /**
+     * default: 41898282+github-actions[bot]@users.noreply.github.com
+     */
+    commitUserEmail?: string,
+
+    /**
+     * github-actions[bot]
+     */
+    commitAuthor?: string,
 
     /**
      * default: true
@@ -31,9 +51,14 @@ export type ExecuteOptions = {
     push?: boolean,
 
     /**
+     * default: github
+     */
+    provider?: string,
+
+    /**
      * default: undefined
      */
-    githubToken?: string,
+    token?: string,
 
     /**
      * if not defined, patched version.

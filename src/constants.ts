@@ -7,6 +7,10 @@
 
 export const HELM_CHART_META = Symbol.for('HEVI_HELM_CHART_META');
 
+export enum Provider {
+    GITHUB = 'github',
+}
+
 export enum HelmVersionType {
     APP = 'app',
     DEFAULT = 'default',
