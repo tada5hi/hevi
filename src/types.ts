@@ -5,27 +5,43 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ReleaseType } from 'semver';
 import type { HelmVersionType } from './constants';
 
-export type Options = {
+export type ExecuteOptions = {
     /**
+     * Project root.
+     *
      * default: process.cwd()
      */
     cwd?: string,
 
     /**
-     * default: patch
+     * Relative path in project directory.
      */
-    level?: `${ReleaseType}`,
+    directory?: string,
+
+    /**
+     * default: true
+     */
+    commit?: boolean,
+
+    /**
+     * default: true
+     */
+    push?: boolean,
 
     /**
      * default: undefined
      */
-    versionType?: `${HelmVersionType}`,
+    githubToken?: string,
 
     /**
      * if not defined, patched version.
      */
     version?: string
+
+    /**
+     * default: undefined
+     */
+    versionType?: `${HelmVersionType}` | string,
 };

@@ -7,14 +7,15 @@
 
 import { HelmVersionType } from '../constants';
 import type { HelmChart } from './types';
+import { bumpVersion } from '../version-bump';
 
-export function setHelmChartVersion(chart: HelmChart, version: string, type?: `${HelmVersionType}`) {
-    if (type === 'app') {
+export function setHelmChartVersion(chart: HelmChart, version: string, type?: `${HelmVersionType}` | string) {
+    if (type === HelmVersionType.APP) {
         chart.appVersion = version;
         return chart;
     }
 
-    if (type === 'default') {
+    if (type === HelmVersionType.DEFAULT) {
         chart.version = version;
         return chart;
     }
@@ -27,4 +28,30 @@ export function setHelmChartVersion(chart: HelmChart, version: string, type?: `$
 
 export function setHelmChartsVersion(charts: HelmChart[], version: string, type?: `${HelmVersionType}`) {
     return charts.map((chart) => setHelmChartVersion(chart, version, type));
+}
+
+export function bumpHelmChartVersion(chart: HelmChart, type?: `${HelmVersionType}` | string) {
+    if (type === HelmVersionType.APP) {
+        if (chart.appVersion) {
+            chart.appVersion = bumpVersion(chart.appVersion) || '1.0.0';
+        } else {
+            chart.appVersion = '1.0.0';
+        }
+
+        return chart;
+    }
+
+    if (type === HelmVersionType.DEFAULT) {
+        if (chart.version) {
+            chart.version = bumpVersion(chart.version) || '1.0.0';
+        } else {
+            chart.version = '1.0.0';
+        }
+        return chart;
+    }
+
+    bumpHelmChartVersion(chart, HelmVersionType.APP);
+    bumpHelmChartVersion(chart, HelmVersionType.DEFAULT);
+
+    return chart;
 }

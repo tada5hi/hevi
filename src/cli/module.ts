@@ -5,6 +5,8 @@ import path from 'node:path';
 import process from 'node:process';
 import { setGithubClientFactory } from '../github';
 import { findHelmCharts, setHelmChartsVersion } from '../helm';
+import { HelmVersionType } from '../constants';
+import { execute } from '../module';
 
 export async function createCLIEntryPointCommand() {
     const pkgRaw = await fs.promises.readFile(
@@ -29,9 +31,14 @@ export async function createCLIEntryPointCommand() {
                 type: 'string',
                 description: 'Relative directory path (default: .)',
             },
-            release: {
+            commit: {
                 type: 'boolean',
-                description: 'Release changes (commit & push)',
+                description: 'Commit git changes',
+                default: true,
+            },
+            push: {
+                type: 'boolean',
+                description: 'Push git changes',
                 default: true,
             },
             githubToken: {
@@ -45,21 +52,21 @@ export async function createCLIEntryPointCommand() {
             },
             versionType: {
                 type: 'string',
+                options: Object.values(HelmVersionType),
             },
         },
         async setup(ctx) {
-            if (ctx.args.githubToken) {
-                setGithubClientFactory(() => getOctokit(ctx.args.githubToken));
-            }
-
-            const charts = await findHelmCharts({
+            await execute({
                 cwd: ctx.args.cwd,
-                // directory: ctx.args.directory,
+                directory: ctx.args.directory,
+                version: ctx.args.version,
+                versionType: ctx.args.versionType,
+                githubToken: ctx.args.githubToken,
+                commit: ctx.args.commit,
+                push: ctx.args.push,
             });
 
-            if (ctx.args.version) {
-                setHelmChartsVersion(charts, ctx.args.version);
-            }
+            process.exit(0);
         },
     });
 }

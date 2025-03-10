@@ -24,10 +24,10 @@ type GithubFileContentOptions = {
     message: string
 };
 
-export function changeGithubFileContent(options: GithubFileContentOptions) {
+export async function changeGithubFileContent(options: GithubFileContentOptions) {
     const octokit = useGithubClient();
 
-    octokit.rest.repos.createOrUpdateFileContents({
+    await octokit.rest.repos.createOrUpdateFileContents({
         owner: context.repo.owner,
         repo: context.repo.repo,
         path: options.path,

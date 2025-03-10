@@ -6,13 +6,11 @@
  */
 
 import fs from 'node:fs';
-import { stringify } from 'yaml';
 import type { HelmChart } from './types';
+import { serializeHelmChart } from './serialize';
 
 export async function writeHelmChart(container: HelmChart) : Promise<void> {
-    const { hevi, ...data } = container;
-
-    await fs.promises.writeFile(hevi.path, stringify(data));
+    await fs.promises.writeFile(container.hevi.path, serializeHelmChart(container));
 }
 
 export async function writeHelmCharts(containers: HelmChart[]) : Promise<void> {
