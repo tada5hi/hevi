@@ -7,6 +7,10 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/hevi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/hevi?targetFile=package.json)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
+> 🚧 **Work in Progress**
+>
+> This project is currently under active development and is not yet ready for production.
+
 **Table of Contents**
 - [Installation](#installation)
 - [Usage](#usage)
