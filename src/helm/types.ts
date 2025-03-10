@@ -12,6 +12,7 @@ export type HelmChartsReadOptions = {
 export type HelmChart = {
     hevi: {
         path: string,
+        pathAbsolute: string,
     },
 
     apiVersion: string,

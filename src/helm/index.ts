@@ -7,5 +7,6 @@
 
 export * from './version';
 export * from './read';
+export * from './serialize';
 export * from './types';
 export * from './write';

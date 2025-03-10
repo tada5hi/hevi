@@ -6,13 +6,15 @@
  */
 
 import { buildFilePath, load, locateMany } from 'locter';
+import path from 'node:path';
 import type { HelmChart, HelmChartsReadOptions } from './types';
 
-export async function readHelmChart(file: string) : Promise<HelmChart> {
+export async function readHelmChart(file: string, cwd?: string) : Promise<HelmChart> {
     // todo: maybe validate content
     return {
         hevi: {
-            path: file,
+            path: path.relative(cwd || process.cwd(), file),
+            pathAbsolute: file,
         },
         ...await load(file),
     };
@@ -30,7 +32,7 @@ export async function findHelmCharts(options: HelmChartsReadOptions = {}): Promi
     }
 
     const files = locations.map(
-        (location) => readHelmChart(buildFilePath(location)),
+        (location) => readHelmChart(buildFilePath(location), options.cwd),
     );
 
     return Promise.all(files);
