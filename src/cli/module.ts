@@ -97,7 +97,8 @@ export async function createCLIEntryPointCommand() {
                 });
 
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`versioned chart ${charts[i].name}`);
+                    consola
+                        .success(`versioned chart ${charts[i].name} (version: ${charts[i].version} & appVersion: ${charts[i].appVersion})`);
                 }
 
                 process.exit(0);
