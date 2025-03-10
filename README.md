@@ -21,10 +21,55 @@ npm install hevi --save-dev
 
 ```bash
 npx hevi \
-  --ghToken <token>
+  --token <token> \
+  --directory <directory> \
+  --version <version> \
+  --versionType <versionType> \
+  --commit \
+  --commitUserEmail <commitUserEmail> \
+  --commitUserName <commitUserName> \
+  --commitAuthor <commitAuthor> \
+  --push 
 ```
 
-### ghToken
+### token (optional)
 - Type: `String`
-- Default: `process.env.GH_TOKEN`
-- Description: Github token
+- Description: Token for github, gitlab, ...
+
+### directory (optional)
+- Type: `String`
+- Default: `.`
+- Description: Relative path where helm charts are located.
+
+### version (optional)
+- Type: `String`
+- Description: Semver version (x.y.z) otherwise existing version will be patched.
+
+### versionType (optional)
+- Type: `String`
+- Description: Specify if appVersion or version property should be incremented. 
+
+### commit (optional)
+- Type: `Boolean`
+- Default: `false`
+- Description: Commit changes
+
+### commitUserEmail (optional)
+- Type: `String`
+- Description: Commit user email
+
+### commitUserName (optional)
+- Type: `String`
+- Description: Commit user name
+
+### commitAuthor (optional)
+- Type: `String`
+- Description: Commit author
+
+ 
+### push (optional)
+- Type: `Boolean`
+- Default: `false`
+- Description: Push changes
+
+

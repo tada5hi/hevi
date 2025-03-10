@@ -46,13 +46,13 @@ export async function createCLIEntryPointCommand() {
                 description: 'Commit git changes',
                 default: false,
             },
-            commitUserName: {
-                type: 'string',
-                description: 'Commit user name',
-            },
             commitUserEmail: {
                 type: 'string',
                 description: 'Commit user email',
+            },
+            commitUserName: {
+                type: 'string',
+                description: 'Commit user name',
             },
             commitAuthor: {
                 type: 'string',
@@ -69,7 +69,6 @@ export async function createCLIEntryPointCommand() {
             },
             provider: {
                 type: 'string',
-                default: Provider.GITHUB,
                 options: Object.values(Provider),
             },
             version: {
