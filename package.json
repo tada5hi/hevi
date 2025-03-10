@@ -50,12 +50,15 @@
     },
     "license": "MIT",
     "dependencies": {
+        "@actions/github": "^6.0.0",
         "citty": "^0.1.6",
         "consola": "^3.4.0",
         "dotenv": "^16.4.7",
         "fast-glob": "^3.3.3",
+        "js-base64": "^3.7.7",
         "locter": "^2.1.6",
         "semver": "^7.7.1",
+        "singa": "^1.0.0",
         "yaml": "^2.7.0"
     },
     "devDependencies": {

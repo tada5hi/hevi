@@ -5,5 +5,5 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export * from './version-bump';
-export * from './version-set';
+export * from './singleton';
+export * from './types';

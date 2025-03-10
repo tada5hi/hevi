@@ -6,17 +6,14 @@
  */
 
 import type { ReleaseType } from 'semver';
-import type { HelmVersionType, VersionStrategy } from './constants';
+import type { HelmVersionType } from './constants';
 
-export type VersionUpdateOptions = {
-    /**
-     * default: bump
-     */
-    strategy: `${VersionStrategy}`,
+export type Options = {
     /**
      * default: process.cwd()
      */
     cwd?: string,
+
     /**
      * default: patch
      */
