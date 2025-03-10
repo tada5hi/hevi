@@ -9,6 +9,8 @@ import { defineCommand } from 'citty';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import consola from 'consola';
+import { isObject } from 'locter';
 import { HelmVersionType, Provider } from '../constants';
 import { execute } from '../module';
 
@@ -80,21 +82,32 @@ export async function createCLIEntryPointCommand() {
             },
         },
         async setup(ctx) {
-            await execute({
-                cwd: ctx.args.cwd,
-                directory: ctx.args.directory,
-                version: ctx.args.version,
-                versionType: ctx.args.versionType,
-                token: ctx.args.token,
-                branch: ctx.args.branch,
-                commit: ctx.args.commit,
-                commitUserEmail: ctx.args.commitUserEmail,
-                commitUserName: ctx.args.commitUserName,
-                commitAuthor: ctx.args.commitAuthor,
-                push: ctx.args.push,
-            });
+            try {
+                const charts = await execute({
+                    cwd: ctx.args.cwd,
+                    directory: ctx.args.directory,
+                    version: ctx.args.version,
+                    versionType: ctx.args.versionType,
+                    token: ctx.args.token,
+                    branch: ctx.args.branch,
+                    commit: ctx.args.commit,
+                    commitUserEmail: ctx.args.commitUserEmail,
+                    commitUserName: ctx.args.commitUserName,
+                    commitAuthor: ctx.args.commitAuthor,
+                    push: ctx.args.push,
+                });
 
-            process.exit(0);
+                for (let i = 0; i < charts.length; i++) {
+                    consola.success(`versioned chart ${charts[i].name}`);
+                }
+
+                process.exit(0);
+            } catch (e) {
+                if (isObject(e)) {
+                    consola.warn(e?.message || 'An unknown error occurred.');
+                }
+                process.exit(1);
+            }
         },
     });
 }

@@ -94,8 +94,7 @@ export async function execute(options: ExecuteOptions) : Promise<HelmChart[]> {
         await writeHelmCharts(charts);
 
         if (!options.commitUserEmail || !options.commitUserName) {
-            // todo: log message
-            return charts;
+            throw new Error('The options commiterUserEmail & commiterUserName are required to commit changes.');
         }
 
         const commitOptions : GitCommitOptions = {
