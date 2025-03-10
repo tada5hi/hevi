@@ -1,10 +1,14 @@
-import { getOctokit } from '@actions/github';
+/*
+ * Copyright (c) 2025.
+ *  Author Peter Placzek (tada5hi)
+ *  For the full copyright and license information,
+ *  view the LICENSE file that was distributed with this source code.
+ */
+
 import { defineCommand } from 'citty';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { setGithubClientFactory } from '../github';
-import { findHelmCharts, setHelmChartsVersion } from '../helm';
 import { HelmVersionType } from '../constants';
 import { execute } from '../module';
 
@@ -34,12 +38,12 @@ export async function createCLIEntryPointCommand() {
             commit: {
                 type: 'boolean',
                 description: 'Commit git changes',
-                default: true,
+                default: false,
             },
             push: {
                 type: 'boolean',
                 description: 'Push git changes',
-                default: true,
+                default: false,
             },
             githubToken: {
                 type: 'string',
