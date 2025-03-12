@@ -36,13 +36,15 @@ export class Github {
     }
 
     async changeFileContent(options: GithubFileContentOptions) {
+        const contentBase64 = btoa(options.content);
+
         await this.client.rest.repos.createOrUpdateFileContents({
             owner: context.repo.owner,
             repo: context.repo.repo,
             path: options.path,
             message: options.message,
-            content: btoa(options.content),
-            sha: computeGitSha(options.content),
+            content: contentBase64,
+            sha: computeGitSha(contentBase64),
             branch: options.branch,
         });
     }
