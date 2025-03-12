@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/tada5hi/hevi/compare/v1.0.0...v1.1.0) (2025-03-12)
+
+
+### Bug Fixes
+
+* change commit message prefix ([4b82dd7](https://github.com/tada5hi/hevi/commit/4b82dd75000c46ba95a34d470999d10a9efb78b5))
+
+
+### Features
+
+* normalize execute options & restructured src code ([a1c1404](https://github.com/tada5hi/hevi/commit/a1c14040f2fed590d56b7cfa95b220368b9681a1))
+
 # 1.0.0 (2025-03-10)
 
 
