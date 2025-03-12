@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2025.
+ * Copyright (c) 2025-2025.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { HelmVersionType } from './constants';
+import type { HelmVersionType } from '../../constants';
 
 export type ExecuteOptions = {
     /**
@@ -29,7 +29,10 @@ export type ExecuteOptions = {
      * default: true
      */
     commit?: boolean,
-
+    /**
+     * format: Display Name <email@address.com>'
+     */
+    commitUser?: string,
     /**
      * default: github-actions[bot]
      */
@@ -39,11 +42,18 @@ export type ExecuteOptions = {
      * default: 41898282+github-actions[bot]@users.noreply.github.com
      */
     commitUserEmail?: string,
-
     /**
-     * github-actions[bot]
+     * see @property commitUser
      */
     commitAuthor?: string,
+    /**
+     * see @property commitUserName
+     */
+    commitAuthorName?: string,
+    /**
+     * see @property commitUserEmail
+     */
+    commitAuthorEmail?: string,
 
     /**
      * default: true
@@ -68,5 +78,22 @@ export type ExecuteOptions = {
     /**
      * default: undefined
      */
+    versionType?: `${HelmVersionType}` | string,
+};
+
+export type ExecuteOptionsNormalized = {
+    cwd: string,
+    directory: string,
+    branch?: string,
+    commit: boolean,
+    commitUserName: string,
+    commitUserEmail: string,
+    commitAuthor?: string,
+    commitAuthorName?: string,
+    commitAuthorEmail?: string,
+    push: boolean,
+    provider?: string,
+    token?: string,
+    version?: string,
     versionType?: `${HelmVersionType}` | string,
 };

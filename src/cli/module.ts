@@ -12,7 +12,7 @@ import process from 'node:process';
 import consola from 'consola';
 import { isObject } from 'locter';
 import { HelmVersionType, Provider } from '../constants';
-import { execute } from '../module';
+import { execute } from '../commands';
 
 export async function createCLIEntryPointCommand() {
     const pkgRaw = await fs.promises.readFile(
@@ -46,6 +46,10 @@ export async function createCLIEntryPointCommand() {
                 description: 'Commit git changes',
                 default: false,
             },
+            commitUser: {
+                type: 'string',
+                description: 'The user name and email address in the format: Display Name <email@address.com>',
+            },
             commitUserEmail: {
                 type: 'string',
                 description: 'Commit user email',
@@ -56,7 +60,15 @@ export async function createCLIEntryPointCommand() {
             },
             commitAuthor: {
                 type: 'string',
-                description: 'Commit author',
+                description: 'The author name and email address in the format: Display Name <email@address.com>',
+            },
+            commitAuthorName: {
+                type: 'string',
+                description: 'Commit author name',
+            },
+            commitAuthorEmail: {
+                type: 'string',
+                description: 'Commit author email',
             },
             push: {
                 type: 'boolean',
@@ -69,7 +81,7 @@ export async function createCLIEntryPointCommand() {
             },
             provider: {
                 type: 'string',
-                options: Object.values(Provider),
+                valueHint: `${Object.values(Provider).join('|')}`,
             },
             version: {
                 type: 'string',
@@ -77,7 +89,7 @@ export async function createCLIEntryPointCommand() {
             },
             versionType: {
                 type: 'string',
-                options: Object.values(HelmVersionType),
+                valueHint: `${Object.values(HelmVersionType).join('|')}`,
             },
         },
         async setup(ctx) {
@@ -90,9 +102,12 @@ export async function createCLIEntryPointCommand() {
                     token: ctx.args.token,
                     branch: ctx.args.branch,
                     commit: ctx.args.commit,
+                    commitUser: ctx.args.commitUser,
                     commitUserEmail: ctx.args.commitUserEmail,
                     commitUserName: ctx.args.commitUserName,
                     commitAuthor: ctx.args.commitAuthor,
+                    commitAuthorEmail: ctx.args.commitAuthorEmail,
+                    commitAuthorName: ctx.args.commitAuthorName,
                     push: ctx.args.push,
                 });
 
