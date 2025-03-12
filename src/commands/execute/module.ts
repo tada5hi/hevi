@@ -16,7 +16,7 @@ import {
     setHelmChartVersion,
     writeHelmCharts,
 } from '../../helm';
-import { Github } from '../../github/module';
+import { Github } from '../../github';
 import { Provider } from '../../constants';
 import { executeGitCommit, executeGitPush } from '../../git';
 import type { GitCommitOptions } from '../../git';

@@ -57,7 +57,6 @@
         "dotenv": "^16.4.7",
         "locter": "^2.1.6",
         "semver": "^7.7.1",
-        "singa": "^1.0.0",
         "yaml": "^2.7.0"
     },
     "devDependencies": {
