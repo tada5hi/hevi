@@ -50,7 +50,7 @@ export async function execute(input: ExecuteOptions) : Promise<HelmChart[]> {
                     branch: options.branch,
                     content: serializeHelmChart(charts[i]),
                     path: charts[i].hevi.path,
-                    message: `feat: update helm chart ${charts[i].hevi.path} version (${charts[i].version}) & appVersion (${charts[i].appVersion})`,
+                    message: `chore: update helm chart ${charts[i].hevi.path} version (${charts[i].version}) & appVersion (${charts[i].appVersion})`,
                 });
             }
         }
