@@ -12,12 +12,9 @@ import type { HelmChart } from '../../helm';
 import {
     bumpHelmChartVersion,
     findHelmCharts,
-    serializeHelmChart,
     setHelmChartVersion,
     writeHelmCharts,
 } from '../../helm';
-import { Github } from '../../github';
-import { Provider } from '../../constants';
 import { executeGitCommit, executeGitPush } from '../../git';
 import type { GitCommitOptions } from '../../git';
 import { buildDisplayNameEmail } from '../../utils';
@@ -35,24 +32,6 @@ export async function execute(input: ExecuteOptions) : Promise<HelmChart[]> {
             setHelmChartVersion(charts[i], options.version, options.versionType);
         } else {
             bumpHelmChartVersion(charts[i], options.versionType);
-        }
-    }
-
-    if (options.commit && options.push) {
-        if (
-            options.token &&
-            options.provider === Provider.GITHUB
-        ) {
-            const github = new Github(options.token);
-
-            for (let i = 0; i < charts.length; i++) {
-                await github.changeFileContent({
-                    branch: options.branch,
-                    content: serializeHelmChart(charts[i]),
-                    path: charts[i].hevi.path,
-                    message: `chore: update helm chart ${charts[i].hevi.path} version (${charts[i].version}) & appVersion (${charts[i].appVersion})`,
-                });
-            }
         }
     }
 

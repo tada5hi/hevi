@@ -11,5 +11,8 @@ export function computeGitSha(content: string) {
     const textEncoder = new TextEncoder();
     const encoded = textEncoder.encode(content);
 
-    return createHash('sha1').update(`blob ${encoded.length}\0`).update(content).digest('hex');
+    return createHash('sha1')
+        .update(`blob ${encoded.length}\0`)
+        .update(content)
+        .digest('hex');
 }

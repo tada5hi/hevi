@@ -9,3 +9,4 @@ export * from './helm';
 export * from './constants';
 export * from './commands';
 export * from './version-bump';
+export * from './types';

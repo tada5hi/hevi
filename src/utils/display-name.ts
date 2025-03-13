@@ -5,10 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-interface DisplayNameEmail {
-    name: string
-    email: string
-}
+import type { DisplayNameEmail } from '../types';
 
 /**
  * @see https://github.com/peter-evans/create-pull-request/blob/a7759c6f845add8bbb34383885a4367cc0d43210/src/utils.ts#L68C17-L68C38
