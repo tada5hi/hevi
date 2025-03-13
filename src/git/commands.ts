@@ -5,31 +5,14 @@
  *  view the LICENSE file that was distributed with this source code.
  */
 
-import type { Output } from 'tinyexec';
 import { x } from 'tinyexec';
 import type { GitCommitOptions, GitPushOptions } from './types';
 import { buildDisplayNameEmail } from '../utils';
 
-/**
- * @see https://github.com/stefanzweifel/git-auto-commit-action/blob/master/entrypoint.sh
- *
- * @param options
- */
-export async function executeGitCommit(options: GitCommitOptions) {
-    const output = await x('git', [
-        '-c',
-        `user.name=${options.userName}`,
-        '-c',
-        `user.email=${options.userEmail}`,
-        'commit',
-        '--amend',
-        '-m',
-        `${options.message}`,
-        '--author',
-        `${options.author ? options.author : buildDisplayNameEmail(options.userName, options.userEmail)}`,
-    ], {
+export async function executeGitCommand(ctx: {args: string[], cwd?: string}) {
+    const output = await x('git', ctx.args, {
         nodeOptions: {
-            cwd: options.cwd,
+            cwd: ctx.cwd,
         },
     });
 
@@ -38,44 +21,51 @@ export async function executeGitCommit(options: GitCommitOptions) {
     }
 }
 
-export async function executeGitPush(options: GitPushOptions) {
-    let output: Output;
+/**
+ * @see https://github.com/stefanzweifel/git-auto-commit-action/blob/master/entrypoint.sh
+ *
+ * @param options
+ */
+export async function executeGitCommit(options: GitCommitOptions) {
+    await executeGitCommand({
+        args: [
+            '-c',
+            `user.name=${options.userName}`,
+            '-c',
+            `user.email=${options.userEmail}`,
+            'commit',
+            '--amend',
+            '-m',
+            `${options.message}`,
+            '--author',
+            `${options.author ? options.author : buildDisplayNameEmail(options.userName, options.userEmail)}`,
+        ],
+        cwd: options.cwd,
+    });
+}
 
+export async function executeGitPush(options: GitPushOptions) {
     if (options.branch) {
-        output = await x(
-            'git',
-            [
+        await executeGitCommand({
+            args: [
                 'push',
                 '--set-upstream',
                 'origin',
                 `HEAD:${options.branch}`,
-                '--follow-tags',
-                '--atomic',
             ],
-            {
-                nodeOptions: {
-                    cwd: options.cwd,
-                },
-            },
-        );
-    } else {
-        output = await x(
-            'git',
-            [
-                'push',
-                '--follow-tags',
-                '--atomic',
-            ],
-            {
-                throwOnError: false,
-                nodeOptions: {
-                    cwd: options.cwd,
-                },
-            },
-        );
+            cwd: options.cwd,
+        });
+
+        return;
     }
 
-    if (output.stderr) {
-        throw new Error(output.stderr);
-    }
+    await executeGitCommand({
+        args: [
+            'push',
+            '--set-upstream',
+            'origin',
+            `HEAD:${options.branch}`,
+        ],
+        cwd: options.cwd,
+    });
 }

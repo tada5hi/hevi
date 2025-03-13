@@ -15,8 +15,7 @@ import {
     setHelmChartVersion,
     writeHelmCharts,
 } from '../../helm';
-import { executeGitCommit, executeGitPush } from '../../git';
-import type { GitCommitOptions } from '../../git';
+import { executeGitCommand, executeGitCommit, executeGitPush } from '../../git';
 import { buildDisplayNameEmail } from '../../utils';
 
 export async function execute(input: ExecuteOptions) : Promise<HelmChart[]> {
@@ -38,7 +37,17 @@ export async function execute(input: ExecuteOptions) : Promise<HelmChart[]> {
     if (options.commit) {
         await writeHelmCharts(charts);
 
-        const commitOptions : GitCommitOptions = {
+        for (let i = 0; i < charts.length; i++) {
+            await executeGitCommand({
+                args: [
+                    'add',
+                    charts[i].hevi.path,
+                ],
+                cwd: options.cwd,
+            });
+        }
+
+        await executeGitCommit({
             cwd: options.cwd,
             message: 'chore: update helm charts',
             userName: options.commitUserName,
@@ -46,9 +55,7 @@ export async function execute(input: ExecuteOptions) : Promise<HelmChart[]> {
             author: options.commitAuthor ?
                 options.commitAuthor :
                 buildDisplayNameEmail(options.commitUserName, options.commitUserEmail),
-        };
-
-        await executeGitCommit(commitOptions);
+        });
 
         if (options.push) {
             await executeGitPush({
