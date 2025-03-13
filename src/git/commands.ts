@@ -34,7 +34,6 @@ export async function executeGitCommit(options: GitCommitOptions) {
             '-c',
             `user.email=${options.userEmail}`,
             'commit',
-            '--amend',
             '-m',
             `${options.message}`,
             '--author',
