@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/tada5hi/hevi/compare/v1.1.0...v1.1.1) (2025-03-13)
+
+
+### Bug Fixes
+
+* compute sha of base64 content ([b96fe57](https://github.com/tada5hi/hevi/commit/b96fe57ae0f507264e990b30c44cbb81dc30d096))
+* remove github client ([4c72bbd](https://github.com/tada5hi/hevi/commit/4c72bbdef0b747be34bf07849a0bb28b64e02f00))
+* remove singleton api for github client ([e9b4086](https://github.com/tada5hi/hevi/commit/e9b4086abb5d5f35e87209267f0e2b4c3e94b2cf))
+
 # [1.1.0](https://github.com/tada5hi/hevi/compare/v1.0.0...v1.1.0) (2025-03-12)
 
 
