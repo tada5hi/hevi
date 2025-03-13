@@ -51,6 +51,8 @@ export async function executeGitPush(options: GitPushOptions) {
                 '--set-upstream',
                 'origin',
                 `HEAD:${options.branch}`,
+                '--follow-tags',
+                '--atomic',
             ],
             cwd: options.cwd,
         });
@@ -64,6 +66,8 @@ export async function executeGitPush(options: GitPushOptions) {
             '--set-upstream',
             'origin',
             `HEAD:${options.branch}`,
+            '--follow-tags',
+            '--atomic',
         ],
         cwd: options.cwd,
     });
