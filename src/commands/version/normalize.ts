@@ -7,10 +7,15 @@
 
 import process from 'node:process';
 import { Provider } from '../../constants';
-import type { ExecuteOptions, ExecuteOptionsNormalized } from './types';
+import type {
+    VersionCommandOptions,
+    VersionCommandOptionsNormalized,
+} from './types';
 import { buildDisplayNameEmail, parseDisplayNameEmail } from '../../utils';
 
-export function normalizeExecuteOptions(input: ExecuteOptions = {}) : ExecuteOptionsNormalized {
+export function normalizeVersionCommandOptions(
+    input: VersionCommandOptions = {},
+) : VersionCommandOptionsNormalized {
     const cwd = input.cwd || process.cwd();
     const directory = input.directory || '.';
 
@@ -26,7 +31,7 @@ export function normalizeExecuteOptions(input: ExecuteOptions = {}) : ExecuteOpt
         commitUserEmail = input.commitUserEmail;
     }
 
-    const options : ExecuteOptionsNormalized = {
+    const options : VersionCommandOptionsNormalized = {
         cwd,
         directory,
         branch: input.branch,

@@ -26,10 +26,6 @@ export function setHelmChartVersion(chart: HelmChart, version: string, type?: `$
     return chart;
 }
 
-export function setHelmChartsVersion(charts: HelmChart[], version: string, type?: `${HelmVersionType}`) {
-    return charts.map((chart) => setHelmChartVersion(chart, version, type));
-}
-
 export function bumpHelmChartVersion(chart: HelmChart, type?: `${HelmVersionType}` | string) {
     if (type === HelmVersionType.APP) {
         if (chart.appVersion) {

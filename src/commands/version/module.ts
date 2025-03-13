@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2025-2025.
- * Author Peter Placzek (tada5hi)
- * For the full copyright and license information,
- * view the LICENSE file that was distributed with this source code.
+ * Copyright (c) 2025.
+ *  Author Peter Placzek (tada5hi)
+ *  For the full copyright and license information,
+ *  view the LICENSE file that was distributed with this source code.
  */
 
 import path from 'node:path';
-import { normalizeExecuteOptions } from './normalize';
-import type { ExecuteOptions } from './types';
-import type { HelmChart } from '../../helm';
 import {
     bumpHelmChartVersion,
     findHelmCharts,
@@ -17,9 +14,14 @@ import {
 } from '../../helm';
 import { executeGitCommand, executeGitCommit, executeGitPush } from '../../git';
 import { buildDisplayNameEmail } from '../../utils';
+import { normalizeVersionCommandOptions } from './normalize';
+import type { VersionCommandOptions } from './types';
 
-export async function execute(input: ExecuteOptions) : Promise<HelmChart[]> {
-    const options = normalizeExecuteOptions(input);
+export async function executeVersionCommand(
+    input: VersionCommandOptions,
+) {
+    const options = normalizeVersionCommandOptions(input);
+
     const directoryPath = path.join(options.cwd, options.directory);
 
     const charts = await findHelmCharts({

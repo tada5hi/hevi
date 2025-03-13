@@ -12,7 +12,7 @@ import process from 'node:process';
 import consola from 'consola';
 import { isObject } from 'locter';
 import { HelmVersionType, Provider } from '../constants';
-import { execute } from '../commands';
+import { executeVersionCommand } from '../commands';
 
 export async function createCLIEntryPointCommand() {
     const pkgRaw = await fs.promises.readFile(
@@ -94,7 +94,7 @@ export async function createCLIEntryPointCommand() {
         },
         async setup(ctx) {
             try {
-                const charts = await execute({
+                const charts = await executeVersionCommand({
                     cwd: ctx.args.cwd,
                     directory: ctx.args.directory,
                     version: ctx.args.version,
