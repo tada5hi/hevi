@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/tada5hi/hevi/compare/v1.1.1...v1.1.2) (2025-03-13)
+
+
+### Bug Fixes
+
+* passing args to sub process ([7c4de01](https://github.com/tada5hi/hevi/commit/7c4de014ec7e6808fa0242e7b1e50183a6ee7c8e))
+
 ## [1.1.1](https://github.com/tada5hi/hevi/compare/v1.1.0...v1.1.1) (2025-03-13)
 
 
