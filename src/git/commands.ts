@@ -5,9 +5,10 @@
  *  view the LICENSE file that was distributed with this source code.
  */
 
-import spawn from 'cross-spawn';
-import type { SpawnOptions } from 'node:child_process';
+import type { Output } from 'tinyexec';
+import { x } from 'tinyexec';
 import type { GitCommitOptions, GitPushOptions } from './types';
+import { buildDisplayNameEmail } from '../utils';
 
 /**
  * @see https://github.com/stefanzweifel/git-auto-commit-action/blob/master/entrypoint.sh
@@ -15,49 +16,66 @@ import type { GitCommitOptions, GitPushOptions } from './types';
  * @param options
  */
 export async function executeGitCommit(options: GitCommitOptions) {
-    const spawnOptions : SpawnOptions = {
-        cwd: options.cwd,
-        stdio: 'inherit',
-        detached: false,
-    };
+    const output = await x('git', [
+        '-c',
+        `user.name=${options.userName}`,
+        '-c',
+        `user.email=${options.userEmail}`,
+        'commit',
+        '--amend',
+        '-m',
+        `${options.message}`,
+        '--author',
+        `${options.author ? options.author : buildDisplayNameEmail(options.userName, options.userEmail)}`,
+    ], {
+        nodeOptions: {
+            cwd: options.cwd,
+        },
+    });
 
-    spawn.sync('git', [
-        `-c user.name=${options.userName}`,
-        `-c user.email=${options.userEmail}`,
-        `commit -m "${options.message}"`,
-        `--author=${options.author}`,
-    ], spawnOptions);
+    if (output.stderr) {
+        throw new Error(output.stderr);
+    }
 }
 
 export async function executeGitPush(options: GitPushOptions) {
-    const spawnOptions : SpawnOptions = {
-        cwd: options.cwd,
-        stdio: 'inherit',
-        detached: false,
-    };
+    let output: Output;
 
     if (options.branch) {
-        spawn.sync(
+        output = await x(
             'git',
             [
                 'push',
-                `--set-upstream origin "HEAD:${options.branch}"`,
+                '--set-upstream',
+                'origin',
+                `HEAD:${options.branch}`,
                 '--follow-tags',
                 '--atomic',
             ],
-            spawnOptions,
+            {
+                nodeOptions: {
+                    cwd: options.cwd,
+                },
+            },
         );
-
-        return;
+    } else {
+        output = await x(
+            'git',
+            [
+                'push',
+                '--follow-tags',
+                '--atomic',
+            ],
+            {
+                throwOnError: false,
+                nodeOptions: {
+                    cwd: options.cwd,
+                },
+            },
+        );
     }
 
-    spawn.sync(
-        'git',
-        [
-            'push',
-            '--follow-tags',
-            '--atomic',
-        ],
-        spawnOptions,
-    );
+    if (output.stderr) {
+        throw new Error(output.stderr);
+    }
 }
