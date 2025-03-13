@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/tada5hi/hevi/compare/v1.1.2...v1.2.0) (2025-03-13)
+
+
+### Bug Fixes
+
+* check exitCode of child proccess ([d54ef61](https://github.com/tada5hi/hevi/commit/d54ef611fb8ead29fb156e91bbe094a10cb6694e))
+* do not ammend commit message ([a0a3cce](https://github.com/tada5hi/hevi/commit/a0a3cce8166175b80a92bbc9bebe0a62f6f97d52))
+
+
+### Features
+
+* add git add command before commit ([d82cf63](https://github.com/tada5hi/hevi/commit/d82cf63f0c97fee749cd08cdaae7462f063936b0))
+* apply --follow-tags and --atomic option to git push ([0e88c6c](https://github.com/tada5hi/hevi/commit/0e88c6c9dff89c63c4a0322429b6640e617320c2))
+
 ## [1.1.2](https://github.com/tada5hi/hevi/compare/v1.1.1...v1.1.2) (2025-03-13)
 
 
