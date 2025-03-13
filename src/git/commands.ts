@@ -16,8 +16,11 @@ export async function executeGitCommand(ctx: {args: string[], cwd?: string}) {
         },
     });
 
-    if (output.stderr) {
-        throw new Error(output.stderr);
+    if (
+        output.exitCode &&
+        output.exitCode > 0
+    ) {
+        throw new Error(output.stderr || `An unknown error occurred while executing: git ${ctx.args.join(' ')}`);
     }
 }
 
