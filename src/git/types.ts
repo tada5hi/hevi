@@ -12,7 +12,7 @@ export type GitOptions = {
 export type GitCommitOptions = GitOptions & {
     userName: string,
     userEmail: string,
-    author: string,
+    author?: string,
     message: string
     cwd?: string
 };
