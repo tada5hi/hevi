@@ -34,11 +34,16 @@ export class HelmReleaser {
     }
 
     async execute(args: string[]): Promise<string> {
+        let exists : boolean = false;
         try {
             await executeShellCommand({ cmd: 'which', args: ['cr'], cwd: this.cwd });
-            return executeShellCommand({ cmd: 'hr', args, cwd: this.cwd });
+            exists = true;
         } catch (e) {
             // todo: do nothing
+        }
+
+        if (exists) {
+            return executeShellCommand({ cmd: 'hr', args, cwd: this.cwd });
         }
 
         try {
