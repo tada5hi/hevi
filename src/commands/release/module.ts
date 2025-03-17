@@ -6,8 +6,8 @@
  */
 
 import path from 'node:path';
-import { executeCommand } from '../../utils/exec';
-import { findHelmCharts } from '../../helm';
+import { executeShellCommand } from '../../utils/exec';
+import { HelmReleaser, findHelmCharts } from '../../helm';
 import type { ReleaseCommandOptionsNormalized } from './types';
 import { normalizeReleaseCmdOptions } from './normalize';
 
@@ -21,12 +21,7 @@ export async function executeReleaseCmd(
         cwd: directoryPath,
     });
 
-    const which = await executeCommand({ cmd: 'which', args: ['cr'] });
-    if (!which.startsWith('/')) {
-        throw new Error('chart releaser (cr) is not installed.');
-    }
-
-    await executeCommand({
+    await executeShellCommand({
         cmd: 'rm',
         args: [
             '-rf',
@@ -34,7 +29,7 @@ export async function executeReleaseCmd(
         ],
     });
 
-    await executeCommand({
+    await executeShellCommand({
         cmd: 'rm',
         args: [
             '-rf',
@@ -42,20 +37,20 @@ export async function executeReleaseCmd(
         ],
     });
 
+    const helmReleaser = new HelmReleaser({
+        cwd: options.cwd,
+    });
+
     // packaging step
     for (let i = 0; i < charts.length; i++) {
         const chart = charts[i];
 
-        await executeCommand({
-            cmd: 'cr',
-            args: [
-                'package',
-                chart.hevi.path,
-                '--package-path',
-                '.cr-release-packages',
-            ],
-            cwd: options.cwd,
-        });
+        await helmReleaser.execute([
+            'package',
+            chart.hevi.path,
+            '--package-path',
+            '.cr-release-packages',
+        ]);
     }
 
     if (options.upload) {
@@ -66,32 +61,27 @@ export async function executeReleaseCmd(
         if (options.branch) {
             uploadArgs.push(...['--pages-branch', options.branch]);
         }
+
         // release step
-        await executeCommand({
-            cmd: 'cr',
-            args: [
-                'upload',
-                '-o',
-                options.owner,
-                '-r',
-                options.repo,
-                ...uploadArgs,
-            ],
-        });
+        await helmReleaser.execute([
+            'upload',
+            '-o',
+            options.owner,
+            '-r',
+            options.repo,
+            ...uploadArgs,
+        ]);
 
         // update index step
-        await executeCommand({
-            cmd: 'cr',
-            args: [
-                'index',
-                '-o',
-                options.owner,
-                '-r',
-                options.repo,
-                '--push',
-                ...uploadArgs,
-            ],
-        });
+        await helmReleaser.execute([
+            'index',
+            '-o',
+            options.owner,
+            '-r',
+            options.repo,
+            '--push',
+            ...uploadArgs,
+        ]);
     }
 
     return charts;

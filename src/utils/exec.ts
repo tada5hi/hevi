@@ -7,7 +7,7 @@
 
 import { x } from 'tinyexec';
 
-export async function executeCommand(ctx: {
+export async function executeShellCommand(ctx: {
     cmd: string,
     args: string[],
     cwd?: string
