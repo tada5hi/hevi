@@ -43,7 +43,7 @@ export class HelmReleaser {
         }
 
         if (exists) {
-            return executeShellCommand({ cmd: 'hr', args, cwd: this.cwd });
+            return executeShellCommand({ cmd: 'cr', args, cwd: this.cwd });
         }
 
         try {
