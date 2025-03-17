@@ -8,11 +8,23 @@
 import { HelmReleaser } from '../../../src';
 
 describe('helm > releaser', () => {
-    it('should download helm releaser', async () => {
-        const helmReleaser = new HelmReleaser();
+    it('should download helm releaser for windows', async () => {
+        const helmReleaser = new HelmReleaser({
+            platform: 'win32',
+            arch: 'x64',
+        });
 
         const fileName = await helmReleaser.download();
+        expect(fileName).toBeDefined();
+    });
 
+    it('should download helm releaser for linux', async () => {
+        const helmReleaser = new HelmReleaser({
+            platform: 'linux',
+            arch: 'x64',
+        });
+
+        const fileName = await helmReleaser.download();
         expect(fileName).toBeDefined();
     });
 

@@ -15,7 +15,7 @@ import { fromBuffer } from 'yauzl';
 import { Parser } from 'tar';
 import { executeShellCommand } from '../../utils/exec';
 import { streamToBuffer } from '../../utils/stream-to-buffer';
-import type { HelmReleaserDownloadOptions } from './types';
+import type { HelmReleaserOptions } from './types';
 
 export class HelmReleaser {
     protected version: string;
@@ -26,7 +26,7 @@ export class HelmReleaser {
 
     protected cwd : string;
 
-    constructor(options: HelmReleaserDownloadOptions = {}) {
+    constructor(options: HelmReleaserOptions = {}) {
         this.version = options.version || '1.7.0';
         this.platform = options.platform || os.platform();
         this.arch = options.arch || os.arch();
@@ -122,7 +122,7 @@ export class HelmReleaser {
         let found : boolean = false;
         const parser = new Parser({
             filter: (path) => {
-                if (path === 'hr') {
+                if (path === 'cr') {
                     found = true;
                     return true;
                 }
