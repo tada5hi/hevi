@@ -45,10 +45,11 @@ export class HelmReleaser {
             return executeShellCommand({ cmd: execPath, args, cwd: this.cwd });
         }
 
+        const filePath = path.join(this.cwd, this.executableFileName());
         try {
-            await fs.promises.access(this.executableFileName(), fs.constants.F_OK);
+            await fs.promises.access(filePath, fs.constants.F_OK);
         } catch (e) {
-            await this.download();
+            await this.downloadExec();
         }
 
         await new Promise<void>(
@@ -58,7 +59,7 @@ export class HelmReleaser {
         return executeShellCommand({ cmd: `./${this.executableFileName()}`, args, cwd: this.cwd });
     }
 
-    async download() {
+    async downloadExec() {
         if (!this.isPlatformSupportedForDownload(this.platform)) {
             throw new Error(`Platform ${this.platform} has no remote source.`);
         }
@@ -75,6 +76,16 @@ export class HelmReleaser {
         await this.unpack(readStream, writeStream);
 
         return filePath;
+    }
+
+    async rmExec() {
+        const filePath = path.join(this.cwd, this.executableFileName());
+        try {
+            await fs.promises.access(filePath, fs.constants.F_OK);
+            await fs.promises.rm(filePath);
+        } catch (e) {
+            // do nothing
+        }
     }
 
     protected async unpack(input: Readable, output: Writable | PassThrough) {

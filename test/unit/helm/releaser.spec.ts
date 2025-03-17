@@ -14,8 +14,10 @@ describe('helm > releaser', () => {
             arch: 'x64',
         });
 
-        const fileName = await helmReleaser.download();
+        const fileName = await helmReleaser.downloadExec();
         expect(fileName).toBeDefined();
+
+        await helmReleaser.rmExec();
     });
 
     it('should download helm releaser for linux', async () => {
@@ -24,8 +26,10 @@ describe('helm > releaser', () => {
             arch: 'x64',
         });
 
-        const fileName = await helmReleaser.download();
+        const fileName = await helmReleaser.downloadExec();
         expect(fileName).toBeDefined();
+
+        await helmReleaser.rmExec();
     });
 
     it('should execute helm releaser command', async () => {
