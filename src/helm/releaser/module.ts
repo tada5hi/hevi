@@ -51,6 +51,10 @@ export class HelmReleaser {
             await this.download();
         }
 
+        await new Promise<void>(
+            (resolve) => setTimeout(() => { resolve(); }, 100),
+        );
+
         return executeShellCommand({ cmd: `./${this.executableFileName()}`, args, cwd: this.cwd });
     }
 
