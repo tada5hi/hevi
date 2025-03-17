@@ -13,3 +13,7 @@ reports
 db.sqlite
 .env
 cache
+hr
+hr.exe
+.cr-release-packages
+.cr-index

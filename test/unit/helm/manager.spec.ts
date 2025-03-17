@@ -5,14 +5,16 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { execute } from '../../../../src';
+import { HelmChartsManager} from '../../../src';
 
 describe('helm', () => {
     it('should bump version', async () => {
-        const charts = await execute({
+        const manager = new HelmChartsManager({
+            directory: 'test/data',
+        });
+        const charts = await manager.versionCharts({
             commit: false,
             push: false,
-            directory: 'test/data',
         });
 
         expect(charts.length).toBeGreaterThan(0);
@@ -23,10 +25,12 @@ describe('helm', () => {
     });
 
     it('should set version', async () => {
-        const charts = await execute({
+        const manager = new HelmChartsManager({
+            directory: 'test/data',
+        });
+        const charts = await manager.versionCharts({
             commit: false,
             push: false,
-            directory: 'test/data',
             version: '2.0.0',
         });
 

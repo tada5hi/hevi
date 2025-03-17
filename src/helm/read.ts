@@ -7,7 +7,7 @@
 
 import { buildFilePath, load, locateMany } from 'locter';
 import path from 'node:path';
-import type { HelmChart, HelmChartsReadOptions } from './types';
+import type { HelmChart, HelmChartsFindOptions } from './types';
 
 export async function readHelmChart(file: string, cwd?: string) : Promise<HelmChart> {
     // todo: maybe validate content
@@ -20,7 +20,7 @@ export async function readHelmChart(file: string, cwd?: string) : Promise<HelmCh
     };
 }
 
-export async function findHelmCharts(options: HelmChartsReadOptions = {}): Promise<HelmChart[]> {
+export async function findHelmCharts(options: HelmChartsFindOptions = {}): Promise<HelmChart[]> {
     const locations = await locateMany('**/Chart.{yml,yaml}', {
         ignore: ['node_modules/**'],
         onlyFiles: true,

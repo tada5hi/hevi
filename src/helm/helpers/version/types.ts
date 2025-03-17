@@ -4,17 +4,26 @@
  *  For the full copyright and license information,
  *  view the LICENSE file that was distributed with this source code.
  */
-import type { BaseCommandOptions, BaseCommandOptionsNormalized } from '../types';
-import type { HelmVersionType } from '../../constants';
+import type { HelmVersionType } from '../../../constants';
 
-export type VersionCommandOptions = BaseCommandOptions & {
+export type HelmChartsVersionOptions = {
+    /**
+     * git token
+     */
+    token?: string,
+
+    /**
+     * default: github
+     */
+    provider?: string,
+
     /**
      * Git branch.
      */
     branch?: string,
 
     /**
-     * default: true
+     * default: false
      */
     commit?: boolean,
     /**
@@ -44,7 +53,7 @@ export type VersionCommandOptions = BaseCommandOptions & {
     commitAuthorEmail?: string,
 
     /**
-     * default: true
+     * default: false
      */
     push?: boolean,
 
@@ -59,7 +68,17 @@ export type VersionCommandOptions = BaseCommandOptions & {
     versionType?: `${HelmVersionType}` | string,
 };
 
-export type VersionCommandOptionsNormalized = BaseCommandOptionsNormalized & {
+export type HelmChartsVersionOptionsNormalized = {
+    /**
+     * git token
+     */
+    token?: string,
+
+    /**
+     * default: github
+     */
+    provider?: string,
+
     /**
      * Git branch.
      */

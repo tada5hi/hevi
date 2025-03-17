@@ -5,9 +5,12 @@
  *  view the LICENSE file that was distributed with this source code.
  */
 
-import type { BaseCommandOptions, BaseCommandOptionsNormalized } from '../types';
+export type HelmChartsPushOptions = {
+    /**
+     * git token
+     */
+    token?: string,
 
-export type ReleaseCommandOptions = BaseCommandOptions & {
     /**
      * git repository
      */
@@ -22,14 +25,13 @@ export type ReleaseCommandOptions = BaseCommandOptions & {
      * branch to upload charts + index file
      */
     branch?: string,
-
-    /**
-     * upload charts + index file?
-     */
-    upload?: boolean
 };
 
-export type ReleaseCommandOptionsNormalized = BaseCommandOptionsNormalized & {
+export type HelmChartsPushOptionsNormalized = {
+    /**
+     * git token
+     */
+    token?: string,
 
     /**
      * git repository
@@ -45,9 +47,4 @@ export type ReleaseCommandOptionsNormalized = BaseCommandOptionsNormalized & {
      * branch to upload charts + index file
      */
     branch?: string,
-
-    /**
-     * upload charts + index file?
-     */
-    upload: boolean
 };

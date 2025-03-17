@@ -6,19 +6,16 @@
  */
 
 import process from 'node:process';
-import { Provider } from '../../constants';
+import { Provider } from '../../../constants';
 import type {
-    VersionCommandOptions,
-    VersionCommandOptionsNormalized,
+    HelmChartsVersionOptions,
+    HelmChartsVersionOptionsNormalized,
 } from './types';
-import { buildDisplayNameEmail, parseDisplayNameEmail } from '../../utils';
+import { buildDisplayNameEmail, parseDisplayNameEmail } from '../../../utils';
 
-export function normalizeVersionCommandOptions(
-    input: VersionCommandOptions = {},
-) : VersionCommandOptionsNormalized {
-    const cwd = input.cwd || process.cwd();
-    const directory = input.directory || '.';
-
+export function normalizeHelmChartsVersionOptions(
+    input: HelmChartsVersionOptions = {},
+) : HelmChartsVersionOptionsNormalized {
     let commitUserName : string | undefined;
     let commitUserEmail : string | undefined;
 
@@ -31,9 +28,7 @@ export function normalizeVersionCommandOptions(
         commitUserEmail = input.commitUserEmail;
     }
 
-    const options : VersionCommandOptionsNormalized = {
-        cwd,
-        directory,
+    const options : HelmChartsVersionOptionsNormalized = {
         branch: input.branch,
         commit: input.commit ?? false,
         commitUserName: commitUserName || 'github-actions[bot]',
