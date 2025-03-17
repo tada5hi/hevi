@@ -37,7 +37,7 @@ export function defineCLIBuildCommand() {
                 const charts = await manager.buildCharts();
 
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`built chart ${charts[i].name}`);
+                    consola.success(`built chart ${charts[i].name} (${charts[i].meta.directoryPath})`);
                 }
 
                 process.exit(0);

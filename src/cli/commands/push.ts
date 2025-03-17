@@ -34,6 +34,14 @@ export function defineCLIPushCommand() {
                 type: 'string',
                 description: 'Github repository name',
             },
+            branch: {
+                type: 'string',
+                description: 'Github pages branch',
+            },
+            token: {
+                type: 'string',
+                description: 'Git token',
+            },
         },
         async setup(ctx) {
             const manager = new HelmChartsManager({
@@ -43,11 +51,14 @@ export function defineCLIPushCommand() {
 
             try {
                 const charts = await manager.pushCharts({
-
+                    repo: ctx.args.repo,
+                    owner: ctx.args.owner,
+                    token: ctx.args.token,
+                    branch: ctx.args.branch,
                 });
 
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`pushed chart ${charts[i].name}`);
+                    consola.success(`pushed chart ${charts[i].name} (${charts[i].meta.directoryPath})`);
                 }
 
                 process.exit(0);

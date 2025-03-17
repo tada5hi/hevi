@@ -34,7 +34,9 @@ export type HelmChartsFindOptions = {
 };
 
 export type HelmChart = {
-    hevi: {
+    meta: {
+        directoryPath: string,
+        directoryPathAbsolute: string,
         path: string,
         pathAbsolute: string,
     },

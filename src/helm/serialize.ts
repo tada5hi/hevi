@@ -9,7 +9,7 @@ import { stringify } from 'yaml';
 import type { HelmChart } from './types';
 
 export function serializeHelmChart(container: HelmChart) {
-    const { hevi, ...data } = container;
+    const { meta, ...data } = container;
 
     return stringify(data);
 }

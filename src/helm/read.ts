@@ -11,10 +11,15 @@ import type { HelmChart, HelmChartsFindOptions } from './types';
 
 export async function readHelmChart(file: string, cwd?: string) : Promise<HelmChart> {
     // todo: maybe validate content
+    const relativePath = path.relative(cwd || process.cwd(), file);
     return {
-        hevi: {
-            path: path.relative(cwd || process.cwd(), file),
+        meta: {
+            path: relativePath
+                .replaceAll(path.win32.sep, path.posix.sep),
             pathAbsolute: file,
+            directoryPath: path.dirname(relativePath)
+                .replaceAll(path.win32.sep, path.posix.sep),
+            directoryPathAbsolute: path.dirname(file),
         },
         ...await load(file),
     };

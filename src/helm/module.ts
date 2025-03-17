@@ -8,9 +8,10 @@
 import path from 'node:path';
 import type { HelmChartsPushOptions, HelmChartsVersionOptions } from './helpers';
 import { normalizeHelmChartsManagerOptions } from './normalize';
-import { bumpHelmChartVersion, setHelmChartVersion } from './helpers/version/set';
+import {
+    bumpHelmChartVersion, normalizeHelmChartsPushOptions, normalizeHelmChartsVersionOptions, setHelmChartVersion,
+} from './helpers';
 import { executeShellCommand } from '../utils/exec';
-import { normalizeHelmChartsPushOptions, normalizeHelmChartsVersionOptions } from './helpers';
 import { executeGitCommand, executeGitCommit, executeGitPush } from '../git';
 import type { HelmChart, HelmChartsManagerOptions, HelmChartsManagerOptionsNormalized } from './index';
 import { findHelmCharts } from './read';
@@ -70,7 +71,7 @@ export class HelmChartsManager {
                 await executeGitCommand({
                     args: [
                         'add',
-                        this.charts[i].hevi.path,
+                        this.charts[i].meta.directoryPath,
                     ],
                     cwd: this.options.cwd,
                 });
@@ -123,7 +124,7 @@ export class HelmChartsManager {
 
             await this.releaser.execute([
                 'package',
-                chart.hevi.path,
+                chart.meta.directoryPath,
                 '--package-path',
                 '.cr-release-packages',
             ]);

@@ -106,7 +106,10 @@ export function defineCLIVersionCommand() {
                 });
 
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`versioned chart ${charts[i].name} (version: ${charts[i].version} & appVersion: ${charts[i].appVersion})`);
+                    consola.success(
+                        `versioned chart ${charts[i].name} (${charts[i].meta.directoryPath})`,
+                        { version: charts[i].version, appVersion: charts[i].appVersion },
+                    );
                 }
 
                 process.exit(0);
