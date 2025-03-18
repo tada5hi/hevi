@@ -10,7 +10,7 @@ import type { HelmChart } from './types';
 import { serializeHelmChart } from './serialize';
 
 export async function writeHelmChart(container: HelmChart) : Promise<void> {
-    await fs.promises.writeFile(container.hevi.path, serializeHelmChart(container));
+    await fs.promises.writeFile(container.meta.path, serializeHelmChart(container));
 }
 
 export async function writeHelmCharts(containers: HelmChart[]) : Promise<void> {

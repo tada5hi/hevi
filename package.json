@@ -51,13 +51,17 @@
     "license": "MIT",
     "dependencies": {
         "@actions/github": "^6.0.0",
+        "@types/yauzl": "^2.10.3",
         "citty": "^0.1.6",
         "consola": "^3.4.0",
         "dotenv": "^16.4.7",
+        "hapic": "^2.5.2",
         "locter": "^2.1.6",
         "semver": "^7.7.1",
+        "tar": "^7.4.3",
         "tinyexec": "^0.3.2",
-        "yaml": "^2.7.0"
+        "yaml": "^2.7.0",
+        "yauzl": "^3.2.0"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^16.0.1",
