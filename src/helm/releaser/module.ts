@@ -52,9 +52,11 @@ export class HelmReleaser {
             await this.downloadExec();
         }
 
-        await executeShellCommand({ cmd: 'ls', args: [this.cwd] });
-
-        return executeShellCommand({ cmd: `./${this.executableFileName()}`, args, cwd: this.cwd });
+        return executeShellCommand({
+            cmd: path.join(this.cwd, this.executableFileName()),
+            args,
+            cwd: this.cwd,
+        });
     }
 
     async downloadExec() {
