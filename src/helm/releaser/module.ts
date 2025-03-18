@@ -49,12 +49,11 @@ export class HelmReleaser {
         }
 
         if (execPath) {
-            return executeShellCommand(execPath, args, options);
+            return executeShellCommand('hr', args, options);
         }
 
-        const filePath = path.join(this.cwd, this.executableFileName());
         try {
-            await fs.promises.access(filePath, fs.constants.F_OK);
+            await fs.promises.access(this.execFilePath, fs.constants.F_OK);
         } catch (e) {
             await this.downloadExec();
         }
@@ -64,7 +63,7 @@ export class HelmReleaser {
         });
 
         return executeShellCommand(
-            this.executableFileName(),
+            'hr',
             args,
             options,
         );
@@ -77,26 +76,16 @@ export class HelmReleaser {
 
         const url = this.buildDownloadURL();
 
-        const filePath = path.join(this.cwd, this.executableFileName());
+        await fs.promises.mkdir(this.execDirectory, { recursive: true });
 
-        const writeStream = fs.createWriteStream(filePath);
+        const writeStream = fs.createWriteStream(this.execFilePath);
         const response = await hapic.get(url, { responseType: 'stream' });
 
         const readStream = stream.Readable.fromWeb(response.data as any);
 
         await this.unpack(readStream, writeStream);
 
-        return filePath;
-    }
-
-    async rmExec() {
-        const filePath = path.join(this.cwd, this.executableFileName());
-        try {
-            await fs.promises.access(filePath, fs.constants.F_OK);
-            await fs.promises.rm(filePath);
-        } catch (e) {
-            // do nothing
-        }
+        return this.execFilePath;
     }
 
     protected async unpack(input: Readable, output: Writable | PassThrough) {
@@ -175,14 +164,6 @@ export class HelmReleaser {
         });
     }
 
-    private executableFileName() {
-        if (this.platform === 'win32') {
-            return 'hr.exe';
-        }
-
-        return 'hr';
-    }
-
     private isPlatformSupportedForDownload(platform: string): boolean {
         return platform === 'darwin' || platform === 'win32' || platform === 'linux';
     }
@@ -199,13 +180,23 @@ export class HelmReleaser {
         return `chart-releaser_${this.version}_${this.platform}_${arch}.tar.gz`;
     }
 
+    get execDirectory() {
+        const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
+
+        return path.join(basePath, 'cr', this.version, this.platform);
+    }
+
+    get execFilePath() {
+        return path.join(this.execDirectory, 'hr');
+    }
+
     private buildShellOptions() : Partial<Options> {
         return {
             nodeOptions: {
                 cwd: this.cwd,
                 env: {
                     ...process.env,
-                    PATH: this.cwd + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
+                    PATH: this.execDirectory + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
                 },
             },
         };
