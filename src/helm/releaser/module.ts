@@ -16,6 +16,7 @@ import { fromBuffer } from 'yauzl';
 import { Parser } from 'tar';
 import { executeShellCommand } from '../../utils/exec';
 import { streamToBuffer } from '../../utils/stream-to-buffer';
+import { HELM_CHART_RELEASER_NAME } from './constants';
 import type { HelmReleaserOptions } from './types';
 
 export class HelmReleaser {
@@ -41,7 +42,7 @@ export class HelmReleaser {
         try {
             execPath = await executeShellCommand(
                 'which',
-                ['hr'],
+                [this.execFileName],
                 options,
             );
         } catch (e) {
@@ -49,7 +50,7 @@ export class HelmReleaser {
         }
 
         if (execPath) {
-            return executeShellCommand('hr', args, options);
+            return executeShellCommand(this.execFileName, args, options);
         }
 
         try {
@@ -64,12 +65,13 @@ export class HelmReleaser {
             await fs.promises.chmod(this.execFilePath, 0o755);
         }
 
+        // fix EBUSY (nodejs)
         await new Promise<void>((resolve) => {
             setTimeout(resolve, 100);
         });
 
         return executeShellCommand(
-            'hr',
+            this.execFileName,
             args,
             options,
         );
@@ -189,11 +191,19 @@ export class HelmReleaser {
     get execDirectory() {
         const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
 
-        return path.join(basePath, 'cr', this.version, this.platform, this.arch);
+        return path.join(basePath, HELM_CHART_RELEASER_NAME, this.version, this.platform, this.arch);
+    }
+
+    get execFileName() {
+        if (this.platform === 'win32') {
+            return `${HELM_CHART_RELEASER_NAME}.exe`;
+        }
+
+        return HELM_CHART_RELEASER_NAME;
     }
 
     get execFilePath() {
-        return path.join(this.execDirectory, 'hr');
+        return path.join(this.execDirectory, this.execFileName);
     }
 
     private buildShellOptions() : Partial<Options> {
