@@ -189,7 +189,7 @@ export class HelmReleaser {
     get execDirectory() {
         const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
 
-        return path.join(basePath, 'cr', this.version, this.platform);
+        return path.join(basePath, 'cr', this.version, this.platform, this.arch);
     }
 
     get execFilePath() {
