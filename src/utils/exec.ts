@@ -13,9 +13,7 @@ export async function executeShellCommand(
     args: string[] = [],
     options : Partial<Options> = {},
 ) : Promise<string> {
-    console.log('input', cmd, args);
     const output = await x(cmd, args, options);
-    console.log('output', output);
 
     if (
         output.exitCode &&
