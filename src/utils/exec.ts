@@ -12,11 +12,13 @@ export async function executeShellCommand(ctx: {
     args: string[],
     cwd?: string
 }) : Promise<string> {
+    console.log('input', ctx);
     const output = await x(ctx.cmd, ctx.args, {
         nodeOptions: {
             cwd: ctx.cwd,
         },
     });
+    console.log('output', output);
 
     if (
         output.exitCode &&
