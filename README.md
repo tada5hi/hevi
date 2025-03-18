@@ -1,6 +1,6 @@
 # Hevi 🛳️
 
-**H**elm **V**ersioner
+Versioner & Releaser for Helm Charts
 
 [![npm version](https://badge.fury.io/js/hevi.svg)](https://badge.fury.io/js/hevi)
 [![Master Workflow](https://github.com/Tada5hi/hevi/workflows/CI/badge.svg)](https://github.com/Tada5hi/hevi)
@@ -14,6 +14,7 @@
 **Table of Contents**
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Version](#version)
 
 ## Installation
 
@@ -23,10 +24,11 @@ npm install hevi --save-dev
 
 ## Usage
 
+### Version
+
 ```bash
-npx hevi \
+npx hevi version <directory> \
   --token <token> \
-  --directory <directory> \
   --version <version> \
   --versionType <versionType> \
   --commit \
@@ -36,42 +38,41 @@ npx hevi \
   --push 
 ```
 
-### token (optional)
+#### token (optional)
 - Type: `String`
 - Description: Token for github, gitlab, ...
 
-### directory (optional)
+#### directory (optional)
 - Type: `String`
 - Default: `.`
 - Description: Relative path where helm charts are located.
 
-### version (optional)
+#### version (optional)
 - Type: `String`
 - Description: Semver version (x.y.z) otherwise existing version will be patched.
 
-### versionType (optional)
+#### versionType (optional)
 - Type: `String`
 - Description: Specify if appVersion or version property should be incremented. 
 
-### commit (optional)
+#### commit (optional)
 - Type: `Boolean`
 - Default: `false`
 - Description: Commit changes
 
-### commitUserEmail (optional)
+#### commitUserEmail (optional)
 - Type: `String`
 - Description: Commit user email
 
-### commitUserName (optional)
+#### commitUserName (optional)
 - Type: `String`
 - Description: Commit user name
 
-### commitAuthor (optional)
+#### commitAuthor (optional)
 - Type: `String`
 - Description: Commit author
 
- 
-### push (optional)
+#### push (optional)
 - Type: `Boolean`
 - Default: `false`
 - Description: Push changes
