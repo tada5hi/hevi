@@ -5,26 +5,23 @@
  *  view the LICENSE file that was distributed with this source code.
  */
 
+import type { Options } from 'tinyexec';
 import { x } from 'tinyexec';
 
-export async function executeShellCommand(ctx: {
+export async function executeShellCommand(
     cmd: string,
-    args: string[],
-    cwd?: string
-}) : Promise<string> {
-    console.log('input', ctx);
-    const output = await x(ctx.cmd, ctx.args, {
-        nodeOptions: {
-            cwd: ctx.cwd,
-        },
-    });
+    args: string[] = [],
+    options : Partial<Options> = {},
+) : Promise<string> {
+    console.log('input', cmd, args);
+    const output = await x(cmd, args, options);
     console.log('output', output);
 
     if (
         output.exitCode &&
         output.exitCode > 0
     ) {
-        throw new Error(output.stderr || `An unknown error occurred while executing: ${ctx.cmd} ${ctx.args.join(' ')}`);
+        throw new Error(output.stderr || `An unknown error occurred while executing: ${cmd} ${args.join(' ')}`);
     }
 
     return output.stdout;

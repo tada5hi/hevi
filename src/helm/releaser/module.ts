@@ -11,6 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import type { PassThrough, Readable, Writable } from 'node:stream';
 import stream from 'node:stream';
+import type { Options } from 'tinyexec';
 import { fromBuffer } from 'yauzl';
 import { Parser } from 'tar';
 import { executeShellCommand } from '../../utils/exec';
@@ -34,15 +35,21 @@ export class HelmReleaser {
     }
 
     async execute(args: string[]): Promise<string> {
+        const options = this.buildShellOptions();
+
         let execPath :string | undefined;
         try {
-            execPath = await executeShellCommand({ cmd: 'which', args: ['hr'], cwd: this.cwd });
+            execPath = await executeShellCommand(
+                'which',
+                ['hr'],
+                options,
+            );
         } catch (e) {
             // todo: do nothing
         }
 
         if (execPath) {
-            return executeShellCommand({ cmd: execPath, args, cwd: this.cwd });
+            return executeShellCommand(execPath, args, options);
         }
 
         const filePath = path.join(this.cwd, this.executableFileName());
@@ -52,11 +59,15 @@ export class HelmReleaser {
             await this.downloadExec();
         }
 
-        return executeShellCommand({
-            cmd: path.join(this.cwd, this.executableFileName()),
-            args,
-            cwd: this.cwd,
+        await new Promise<void>((resolve) => {
+            setTimeout(resolve, 100);
         });
+
+        return executeShellCommand(
+            this.executableFileName(),
+            args,
+            options,
+        );
     }
 
     async downloadExec() {
@@ -186,5 +197,17 @@ export class HelmReleaser {
             return `chart-releaser_${this.version}_windows_${arch}.zip`;
         }
         return `chart-releaser_${this.version}_${this.platform}_${arch}.tar.gz`;
+    }
+
+    private buildShellOptions() : Partial<Options> {
+        return {
+            nodeOptions: {
+                cwd: this.cwd,
+                env: {
+                    ...process.env,
+                    PATH: this.cwd + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
+                },
+            },
+        };
     }
 }

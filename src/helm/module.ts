@@ -101,23 +101,31 @@ export class HelmChartsManager {
     async buildCharts() : Promise<HelmChart[]> {
         await this.loadCharts();
 
-        await executeShellCommand({
-            cmd: 'rm',
-            args: [
+        await executeShellCommand(
+            'rm',
+            [
                 '-rf',
                 '.cr-index',
             ],
-            cwd: this.options.cwd,
-        });
+            {
+                nodeOptions: {
+                    cwd: this.options.cwd,
+                },
+            },
+        );
 
-        await executeShellCommand({
-            cmd: 'rm',
-            args: [
+        await executeShellCommand(
+            'rm',
+            [
                 '-rf',
                 '.cr-release-packages',
             ],
-            cwd: this.options.cwd,
-        });
+            {
+                nodeOptions: {
+                    cwd: this.options.cwd,
+                },
+            },
+        );
 
         for (let i = 0; i < this.charts.length; i++) {
             const chart = this.charts[i];
