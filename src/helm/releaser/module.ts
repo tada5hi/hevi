@@ -58,6 +58,12 @@ export class HelmReleaser {
             await this.downloadExec();
         }
 
+        try {
+            await fs.promises.access(this.execFilePath, fs.constants.X_OK);
+        } catch (e) {
+            await fs.promises.chmod(this.execFilePath, 0o755);
+        }
+
         await new Promise<void>((resolve) => {
             setTimeout(resolve, 100);
         });
