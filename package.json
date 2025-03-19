@@ -55,6 +55,7 @@
         "citty": "^0.1.6",
         "consola": "^3.4.0",
         "dotenv": "^16.4.7",
+        "graph-data-structure": "^4.5.0",
         "hapic": "^2.5.2",
         "locter": "^2.1.6",
         "semver": "^7.7.1",

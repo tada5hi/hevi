@@ -4,7 +4,7 @@
  *  For the full copyright and license information,
  *  view the LICENSE file that was distributed with this source code.
  */
-import type { HelmVersionType } from '../../../constants';
+import type { HelmVersionType } from '../../../../constants';
 
 export type HelmChartsVersionOptions = {
     /**

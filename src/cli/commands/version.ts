@@ -10,7 +10,7 @@ import consola from 'consola';
 import { isObject } from 'locter';
 import process from 'node:process';
 import { HelmVersionType, Provider } from '../../constants';
-import { HelmChartsManager } from '../../helm';
+import { HelmChartManager } from '../../helm';
 
 export function defineCLIVersionCommand() {
     return defineCommand({
@@ -18,11 +18,6 @@ export function defineCLIVersionCommand() {
             name: 'version',
         },
         args: {
-            cwd: {
-                type: 'string',
-                default: process.cwd(),
-                description: 'Working directory path',
-            },
             directory: {
                 type: 'positional',
                 default: '.',
@@ -84,13 +79,11 @@ export function defineCLIVersionCommand() {
             },
         },
         async setup(ctx) {
-            const helm = new HelmChartsManager({
-                directory: ctx.args.directory,
-                cwd: ctx.args.cwd,
-            });
+            const manager = new HelmChartManager();
+            await manager.loadMany(ctx.args.directory);
 
             try {
-                const charts = await helm.versionCharts({
+                const charts = await manager.versionCharts({
                     version: ctx.args.version,
                     versionType: ctx.args.versionType,
                     token: ctx.args.token,
@@ -107,8 +100,8 @@ export function defineCLIVersionCommand() {
 
                 for (let i = 0; i < charts.length; i++) {
                     consola.success(
-                        `versioned chart ${charts[i].name} (${charts[i].meta.directoryPath})`,
-                        { version: charts[i].version, appVersion: charts[i].appVersion },
+                        `versioned chart ${charts[i].data.name} (${charts[i].directoryPathRelativePosix})`,
+                        { version: charts[i].data.version, appVersion: charts[i].data.appVersion },
                     );
                 }
 

@@ -14,8 +14,8 @@ import stream from 'node:stream';
 import type { Options } from 'tinyexec';
 import { fromBuffer } from 'yauzl';
 import { Parser } from 'tar';
-import { executeShellCommand } from '../../utils/exec';
-import { streamToBuffer } from '../../utils/stream-to-buffer';
+import { executeShellCommand } from '../../../utils/exec';
+import { streamToBuffer } from '../../../utils/stream-to-buffer';
 import { HELM_CHART_RELEASER_NAME } from './constants';
 import type { HelmReleaserOptions } from './types';
 

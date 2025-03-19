@@ -8,7 +8,7 @@
 import { defineCommand } from 'citty';
 import consola from 'consola';
 import process from 'node:process';
-import { HelmChartsManager } from '../../helm';
+import { HelmChartManager } from '../../helm/chart';
 
 export function defineCLIPushCommand() {
     return defineCommand({
@@ -16,11 +16,6 @@ export function defineCLIPushCommand() {
             name: 'push',
         },
         args: {
-            cwd: {
-                type: 'string',
-                default: process.cwd(),
-                description: 'Working directory path',
-            },
             directory: {
                 type: 'positional',
                 default: '.',
@@ -44,10 +39,8 @@ export function defineCLIPushCommand() {
             },
         },
         async setup(ctx) {
-            const manager = new HelmChartsManager({
-                cwd: ctx.args.cwd,
-                directory: ctx.args.directory,
-            });
+            const manager = new HelmChartManager();
+            await manager.loadMany(ctx.args.directory);
 
             try {
                 const charts = await manager.pushCharts({
@@ -58,7 +51,7 @@ export function defineCLIPushCommand() {
                 });
 
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`pushed chart ${charts[i].name} (${charts[i].meta.directoryPath})`);
+                    consola.success(`pushed chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
                 }
 
                 process.exit(0);

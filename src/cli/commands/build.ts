@@ -8,7 +8,7 @@
 import { defineCommand } from 'citty';
 import consola from 'consola';
 import process from 'node:process';
-import { HelmChartsManager } from '../../helm';
+import { HelmChartManager } from '../../helm';
 
 export function defineCLIBuildCommand() {
     return defineCommand({
@@ -16,11 +16,6 @@ export function defineCLIBuildCommand() {
             name: 'build',
         },
         args: {
-            cwd: {
-                type: 'string',
-                default: process.cwd(),
-                description: 'Working directory path',
-            },
             directory: {
                 type: 'positional',
                 default: '.',
@@ -28,16 +23,13 @@ export function defineCLIBuildCommand() {
             },
         },
         async setup(ctx) {
-            const manager = new HelmChartsManager({
-                cwd: ctx.args.cwd,
-                directory: ctx.args.directory,
-            });
+            const manager = new HelmChartManager();
+            await manager.loadMany(ctx.args.directory);
 
             try {
                 const charts = await manager.buildCharts();
-
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`built chart ${charts[i].name} (${charts[i].meta.directoryPath})`);
+                    consola.success(`built chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
                 }
 
                 process.exit(0);

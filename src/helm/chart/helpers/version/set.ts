@@ -5,9 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HelmVersionType } from '../../../constants';
+import { HelmVersionType } from '../../../../constants';
 import type { HelmChart } from '../../types';
-import { bumpVersion } from '../../../version-bump';
+import { bumpVersion } from '../../../../version-bump';
 
 export function setHelmChartVersion(chart: HelmChart, version: string, type?: `${HelmVersionType}` | string) {
     if (type === HelmVersionType.APP) {

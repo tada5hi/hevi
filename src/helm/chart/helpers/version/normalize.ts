@@ -6,12 +6,12 @@
  */
 
 import process from 'node:process';
-import { Provider } from '../../../constants';
+import { Provider } from '../../../../constants';
 import type {
     HelmChartsVersionOptions,
     HelmChartsVersionOptionsNormalized,
 } from './types';
-import { buildDisplayNameEmail, parseDisplayNameEmail } from '../../../utils';
+import { buildDisplayNameEmail, parseDisplayNameEmail } from '../../../../utils';
 
 export function normalizeHelmChartsVersionOptions(
     input: HelmChartsVersionOptions = {},
