@@ -6,7 +6,7 @@
  */
 import type { HelmVersionType } from '../../../../constants';
 
-export type HelmChartsVersionOptions = {
+export type HelmChartsVersionizeOptions = {
     /**
      * git token
      */

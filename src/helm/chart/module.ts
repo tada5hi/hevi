@@ -82,7 +82,7 @@ export class HelmChartContainer {
     }
 
     get directoryPathRelative() {
-        return path.relative(this.directoryPath, process.cwd());
+        return path.relative(process.cwd(), this.directoryPath);
     }
 
     get directoryPathRelativePosix() {

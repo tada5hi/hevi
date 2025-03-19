@@ -83,7 +83,7 @@ export function defineCLIVersionCommand() {
             await manager.loadMany(ctx.args.directory);
 
             try {
-                const charts = await manager.versionCharts({
+                const charts = await manager.versionizeCharts({
                     version: ctx.args.version,
                     versionType: ctx.args.versionType,
                     token: ctx.args.token,

@@ -8,13 +8,13 @@
 import process from 'node:process';
 import { Provider } from '../../../../constants';
 import type {
-    HelmChartsVersionOptions,
     HelmChartsVersionOptionsNormalized,
+    HelmChartsVersionizeOptions,
 } from './types';
 import { buildDisplayNameEmail, parseDisplayNameEmail } from '../../../../utils';
 
 export function normalizeHelmChartsVersionOptions(
-    input: HelmChartsVersionOptions = {},
+    input: HelmChartsVersionizeOptions = {},
 ) : HelmChartsVersionOptionsNormalized {
     let commitUserName : string | undefined;
     let commitUserEmail : string | undefined;

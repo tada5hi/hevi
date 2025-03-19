@@ -9,7 +9,7 @@ import { defineCommand } from 'citty';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { defineCLIBuildCommand, defineCLIPushCommand, defineCLIVersionCommand } from './commands';
+import { defineCLIPackageCommand, defineCLIPushCommand, defineCLIVersionCommand } from './commands';
 
 export async function createCLIEntryPointCommand() {
     const pkgRaw = await fs.promises.readFile(
@@ -25,7 +25,7 @@ export async function createCLIEntryPointCommand() {
             description: pkg.description,
         },
         subCommands: {
-            build: defineCLIBuildCommand(),
+            package: defineCLIPackageCommand(),
             push: defineCLIPushCommand(),
             version: defineCLIVersionCommand(),
         },

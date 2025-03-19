@@ -14,7 +14,6 @@ export async function executeShellCommand(
     options : Partial<Options> = {},
 ) : Promise<string> {
     const output = await x(cmd, args, options);
-
     if (
         output.exitCode &&
         output.exitCode > 0

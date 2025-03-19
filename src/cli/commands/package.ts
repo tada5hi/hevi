@@ -10,10 +10,10 @@ import consola from 'consola';
 import process from 'node:process';
 import { HelmChartManager } from '../../helm';
 
-export function defineCLIBuildCommand() {
+export function defineCLIPackageCommand() {
     return defineCommand({
         meta: {
-            name: 'build',
+            name: 'package',
         },
         args: {
             directory: {
@@ -27,9 +27,9 @@ export function defineCLIBuildCommand() {
             await manager.loadMany(ctx.args.directory);
 
             try {
-                const charts = await manager.buildCharts();
+                const charts = await manager.packageCharts();
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`built chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
+                    consola.success(`packaged chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
                 }
 
                 process.exit(0);

@@ -8,7 +8,7 @@
 import { Graph, topologicalSort } from 'graph-data-structure';
 import { buildFilePath, load, locateMany } from 'locter';
 import path from 'node:path';
-import type { HelmChartsPushOptions, HelmChartsVersionOptions } from './helpers';
+import type { HelmChartsPushOptions, HelmChartsVersionizeOptions } from './helpers';
 import { HelmChartContainer } from './module';
 import {
     normalizeHelmChartsPushOptions,
@@ -27,19 +27,21 @@ export class HelmChartManager {
 
     protected items: Record<string, HelmChartContainer>;
 
-    protected loaded: Set<string>;
-
     protected releaser : HelmReleaser;
 
     constructor() {
         this.graph = new Graph();
 
         this.items = {};
-        this.loaded = new Set<string>();
 
         this.releaser = new HelmReleaser();
     }
 
+    /**
+     * Load a single chart repository from the file system.
+     *
+     * @param file
+     */
     async load(file: string) {
         let filePath = path.isAbsolute(file) ?
             file :
@@ -64,14 +66,17 @@ export class HelmChartManager {
 
         for (let i = 0; i < container.dependencies.length; i++) {
             const dependencyRepositoryPath = container.dependencies[i].repositoryFilePath;
-            if (!dependencyRepositoryPath) {
-                continue;
+            if (dependencyRepositoryPath) {
+                this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
             }
-
-            this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
         }
     }
 
+    /**
+     * Load multiple chart repositories from the file system.
+     *
+     * @param directory
+     */
     async loadMany(directory: string) : Promise<void> {
         this.items = {};
         this.graph = new Graph();
@@ -82,14 +87,15 @@ export class HelmChartManager {
             path: directory,
         });
 
-        const loadPromises = locations.map(
-            ((location) => this.load(buildFilePath(location))),
+        const locationPaths = locations.map((location) => buildFilePath(location));
+        const loadPromises = locationPaths.map(
+            ((location) => this.load(location)),
         );
 
         await Promise.all(loadPromises);
     }
 
-    async versionCharts(input: HelmChartsVersionOptions = {}) {
+    async versionizeCharts(input: HelmChartsVersionizeOptions = {}) {
         const options = normalizeHelmChartsVersionOptions(input);
 
         const graphFlat = topologicalSort(this.graph)
@@ -118,18 +124,16 @@ export class HelmChartManager {
                 });
             }
 
-            if (!options.commit) {
-                continue;
+            if (options.commit) {
+                await chart.save();
+
+                await executeGitCommand({
+                    args: [
+                        'add',
+                        this.items[i].directoryPathRelativePosix,
+                    ],
+                });
             }
-
-            await chart.save();
-
-            await executeGitCommand({
-                args: [
-                    'add',
-                    this.items[i].directoryPathRelativePosix,
-                ],
-            });
         }
 
         if (options.commit) {
@@ -152,7 +156,7 @@ export class HelmChartManager {
         return Object.values(this.items);
     }
 
-    async buildCharts() : Promise<HelmChartContainer[]> {
+    async packageCharts() : Promise<HelmChartContainer[]> {
         await executeShellCommand(
             'rm',
             [

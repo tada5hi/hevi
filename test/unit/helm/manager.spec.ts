@@ -8,14 +8,15 @@
 import { HelmChartManager } from '../../../src';
 
 describe('helm', () => {
-    it('should bump version', async () => {
-        const manager = new HelmChartManager();
-        await manager.loadMany('test/data');
+    let manager : HelmChartManager;
 
-        const charts = await manager.versionCharts({
-            commit: false,
-            push: false,
-        });
+    beforeAll(async () => {
+        manager = new HelmChartManager();
+        await manager.loadMany('test/data');
+    });
+
+    it('should bump version', async () => {
+        const charts = await manager.versionizeCharts();
 
         expect(charts.length).toEqual(2);
 
@@ -41,12 +42,7 @@ describe('helm', () => {
     });
 
     it('should set version', async () => {
-        const manager = new HelmChartManager();
-        await manager.loadMany('test/data');
-
-        const charts = await manager.versionCharts({
-            commit: false,
-            push: false,
+        const charts = await manager.versionizeCharts({
             version: '2.0.0',
         });
 
