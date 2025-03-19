@@ -1,3 +1,19 @@
+# [1.3.0](https://github.com/tada5hi/hevi/compare/v1.2.0...v1.3.0) (2025-03-19)
+
+
+### Bug Fixes
+
+* adjust helm releaser directory and binary name ([d243857](https://github.com/tada5hi/hevi/commit/d2438574fe665a0dc2b62a069ee9cf7afb303e79))
+* consider arch in exec directory path ([b032be4](https://github.com/tada5hi/hevi/commit/b032be4ea79b310e91b29726e85e220129c76f3a))
+* **deps:** bump the minorandpatch group across 1 directory with 3 updates ([#12](https://github.com/tada5hi/hevi/issues/12)) ([bf2f311](https://github.com/tada5hi/hevi/commit/bf2f311e6895cb87d7321db9e441721e2870bbc6))
+* simplify repository file path access of chart dependency ([cc37b91](https://github.com/tada5hi/hevi/commit/cc37b9108411f9de7722ac9176fcbe6c21518e95))
+
+
+### Features
+
+* integrate helm releaser & helm charts manager ([#10](https://github.com/tada5hi/hevi/issues/10)) ([535b8e5](https://github.com/tada5hi/hevi/commit/535b8e5966b314e32d4302703c59e8bc64a9749f))
+* organize helm charts as (directed) graph ([ae9f305](https://github.com/tada5hi/hevi/commit/ae9f3056378eece3bab39416de71fbd992659f4a))
+
 # [1.2.0](https://github.com/tada5hi/hevi/compare/v1.1.2...v1.2.0) (2025-03-13)
 
 
