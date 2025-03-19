@@ -22,12 +22,11 @@ export class HelmChartDependencyContainer {
         this.parent = parent;
     }
 
-    get isFileRepository() {
-        return this.data.repository && this.data.repository.startsWith('file://');
-    }
-
     get repositoryFilePath(): string | null {
-        if (!this.isFileRepository || !this.data.repository) {
+        if (
+            !this.data.repository ||
+            this.data.repository.substring(0, 7) !== 'file://'
+        ) {
             return null;
         }
 
