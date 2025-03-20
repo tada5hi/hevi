@@ -8,10 +8,10 @@
 import { Graph, topologicalSort } from 'graph-data-structure';
 import { buildFilePath, load, locateMany } from 'locter';
 import path from 'node:path';
-import type { HelmChartsPushOptions, HelmChartsVersionizeOptions } from './helpers';
+import type { HelmChartsReleaseOptions, HelmChartsVersionizeOptions } from './helpers';
 import { HelmChartContainer } from './module';
 import {
-    normalizeHelmChartsPushOptions,
+    normalizeHelmChartsReleaseOptions,
     normalizeHelmChartsVersionOptions,
 } from './helpers';
 import { executeShellCommand } from '../../utils/exec';
@@ -157,21 +157,11 @@ export class HelmChartManager {
     }
 
     async packageCharts() : Promise<HelmChartContainer[]> {
-        await executeShellCommand(
-            'rm',
-            [
-                '-rf',
-                '.cr-index',
-            ],
-        );
+        await executeShellCommand('rm', ['-rf', '.cr-index']);
+        await executeShellCommand('rm', ['-rf', '.cr-release-packages']);
 
-        await executeShellCommand(
-            'rm',
-            [
-                '-rf',
-                '.cr-release-packages',
-            ],
-        );
+        await executeShellCommand('mkdir', ['-p', '.cr-index']);
+        await executeShellCommand('mkdir', ['-p', '.cr-release-packages']);
 
         const graphFlat = topologicalSort(this.graph)
             .reverse();
@@ -190,10 +180,18 @@ export class HelmChartManager {
         return Object.values(this.items);
     }
 
-    async pushCharts(input: HelmChartsPushOptions) : Promise<HelmChartContainer[]> {
-        const options = normalizeHelmChartsPushOptions(input);
+    async releaseCharts(input: HelmChartsReleaseOptions) : Promise<HelmChartContainer[]> {
+        const options = normalizeHelmChartsReleaseOptions(input);
 
-        const uploadArgs : string[] = [];
+        const uploadArgs : string[] = [
+            '-o',
+            options.owner,
+            '-r',
+            options.repo,
+            '--package-path',
+            '.cr-release-packages',
+        ];
+
         if (options.token) {
             uploadArgs.push(...['-t', options.token]);
         }
@@ -204,20 +202,13 @@ export class HelmChartManager {
         // release step
         await this.releaser.execute([
             'upload',
-            '-o',
-            options.owner,
-            '-r',
-            options.repo,
+            '--skip-existing',
             ...uploadArgs,
         ]);
 
         // update index step
         await this.releaser.execute([
             'index',
-            '-o',
-            options.owner,
-            '-r',
-            options.repo,
             '--push',
             ...uploadArgs,
         ]);

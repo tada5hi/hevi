@@ -5,7 +5,7 @@
  *  view the LICENSE file that was distributed with this source code.
  */
 
-export type HelmChartsPushOptions = {
+export type HelmChartsReleaseOptions = {
     /**
      * git token
      */
@@ -27,7 +27,7 @@ export type HelmChartsPushOptions = {
     branch?: string,
 };
 
-export type HelmChartsPushOptionsNormalized = {
+export type HelmChartsReleaseOptionsNormalized = {
     /**
      * git token
      */

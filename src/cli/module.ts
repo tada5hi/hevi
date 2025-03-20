@@ -8,12 +8,11 @@
 import { defineCommand } from 'citty';
 import fs from 'node:fs';
 import path from 'node:path';
-import process from 'node:process';
 import { defineCLIPackageCommand, defineCLIPushCommand, defineCLIVersionCommand } from './commands';
 
 export async function createCLIEntryPointCommand() {
     const pkgRaw = await fs.promises.readFile(
-        path.join(process.cwd(), 'package.json'),
+        path.join(__dirname, '..', 'package.json'),
         { encoding: 'utf8' },
     );
     const pkg = JSON.parse(pkgRaw);
@@ -26,7 +25,7 @@ export async function createCLIEntryPointCommand() {
         },
         subCommands: {
             package: defineCLIPackageCommand(),
-            push: defineCLIPushCommand(),
+            release: defineCLIPushCommand(),
             version: defineCLIVersionCommand(),
         },
     });

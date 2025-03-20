@@ -8,12 +8,12 @@
 import process from 'node:process';
 import { context } from '@actions/github';
 import type {
-    HelmChartsPushOptions,
-    HelmChartsPushOptionsNormalized,
+    HelmChartsReleaseOptions,
+    HelmChartsReleaseOptionsNormalized,
 } from './types';
 
-export function normalizeHelmChartsPushOptions(input: HelmChartsPushOptions = {}) : HelmChartsPushOptionsNormalized {
-    const options : HelmChartsPushOptionsNormalized = {
+export function normalizeHelmChartsReleaseOptions(input: HelmChartsReleaseOptions = {}) : HelmChartsReleaseOptionsNormalized {
+    const options : HelmChartsReleaseOptionsNormalized = {
         owner: input.owner || context.repo.owner,
         repo: input.repo || context.repo.repo,
         branch: input.branch,

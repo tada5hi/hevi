@@ -43,7 +43,7 @@ export function defineCLIPushCommand() {
             await manager.loadMany(ctx.args.directory);
 
             try {
-                const charts = await manager.pushCharts({
+                const charts = await manager.releaseCharts({
                     repo: ctx.args.repo,
                     owner: ctx.args.owner,
                     token: ctx.args.token,
