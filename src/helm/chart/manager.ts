@@ -18,22 +18,27 @@ import { buildDisplayNameEmail, executeShellCommand } from '../../utils';
 import { executeGitCommand, executeGitCommit, executeGitPush } from '../../git';
 
 import {
+    HelmBinary,
     HelmChartReleaserBinary,
 } from '../../bin';
+import type { HelmChartManagerPushOptions } from './types';
 
 export class HelmChartManager {
     protected graph : Graph<string>;
 
     protected items: Record<string, HelmChartContainer>;
 
-    protected releaser : HelmChartReleaserBinary;
+    protected helmBinary : HelmBinary;
+
+    protected helmChartReleaserBinary : HelmChartReleaserBinary;
 
     constructor() {
         this.graph = new Graph();
 
         this.items = {};
 
-        this.releaser = new HelmChartReleaserBinary();
+        this.helmBinary = new HelmBinary();
+        this.helmChartReleaserBinary = new HelmChartReleaserBinary();
     }
 
     /**
@@ -156,11 +161,11 @@ export class HelmChartManager {
     }
 
     async packageCharts() : Promise<HelmChartContainer[]> {
-        await executeShellCommand('rm', ['-rf', '.cr-index']);
-        await executeShellCommand('rm', ['-rf', '.cr-release-packages']);
+        await executeShellCommand('rm', ['-rf', '.helm-index']);
+        await executeShellCommand('rm', ['-rf', '.helm-packages']);
 
-        await executeShellCommand('mkdir', ['-p', '.cr-index']);
-        await executeShellCommand('mkdir', ['-p', '.cr-release-packages']);
+        await executeShellCommand('mkdir', ['-p', '.helm-index']);
+        await executeShellCommand('mkdir', ['-p', '.helm-packages']);
 
         const graphFlat = topologicalSort(this.graph)
             .reverse();
@@ -168,11 +173,11 @@ export class HelmChartManager {
         for (let i = 0; i < graphFlat.length; i++) {
             const chart = this.items[graphFlat[i]];
 
-            await this.releaser.execute([
+            await this.helmChartReleaserBinary.execute([
                 'package',
                 chart.directoryPathRelativePosix,
                 '--package-path',
-                '.cr-release-packages',
+                '.helm-packages',
             ]);
         }
 
@@ -188,7 +193,7 @@ export class HelmChartManager {
             '-r',
             options.repo,
             '--package-path',
-            '.cr-release-packages',
+            '.helm-packages',
         ];
 
         if (options.token) {
@@ -199,18 +204,55 @@ export class HelmChartManager {
         }
 
         // release step
-        await this.releaser.execute([
+        await this.helmChartReleaserBinary.execute([
             'upload',
             '--skip-existing',
             ...uploadArgs,
         ]);
 
         // update index step
-        await this.releaser.execute([
+        await this.helmChartReleaserBinary.execute([
             'index',
             '--push',
+            '--index-path',
+            '.helm-index/index.yaml',
             ...uploadArgs,
         ]);
+
+        return Object.values(this.items);
+    }
+
+    async pushCharts(options: HelmChartManagerPushOptions) {
+        try {
+            await this.helmBinary.execute(['registry', 'logout', options.host]);
+        } catch (e) {
+            // do nothing
+        }
+
+        await this.helmBinary.execute([
+            'registry',
+            'login',
+            options.host,
+            '--username',
+            options.username,
+            '--password',
+            options.password,
+        ]);
+
+        const graphFlat = topologicalSort(this.graph)
+            .reverse();
+
+        for (let i = 0; i < graphFlat.length; i++) {
+            const chart = this.items[graphFlat[i]];
+
+            await this.helmBinary.execute([
+                'push',
+                `.helm-packages/${chart.data.name}-${chart.data.version}`,
+                `oci://${options.host}`,
+            ]);
+        }
+
+        await this.helmBinary.execute(['registry', 'logout', options.host]);
 
         return Object.values(this.items);
     }

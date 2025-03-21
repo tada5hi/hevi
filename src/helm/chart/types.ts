@@ -5,30 +5,6 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type HelmChartManagerOptions = {
-    /**
-     * default: .
-     */
-    directory?: string,
-
-    /**
-     * default: process.cwd()
-     */
-    cwd?: string,
-};
-
-export type HelmChartManagerOptionsNormalized = {
-    /**
-     * default: .
-     */
-    directory: string,
-
-    /**
-     * default: process.cwd()
-     */
-    cwd: string,
-};
-
 export type HelmChart = {
     apiVersion: string,
     name: string,
@@ -43,4 +19,10 @@ export type HelmChartDependency = {
     name: string,
     version: string,
     repository?: string,
+};
+
+export type HelmChartManagerPushOptions = {
+    host: string,
+    username: string,
+    password: string,
 };

@@ -10,11 +10,11 @@ import consola from 'consola';
 import process from 'node:process';
 import { HelmChartManager } from '../../helm';
 
-export function defineCLIReleaseCommand() {
+export function defineCLIPushCommand() {
     return defineCommand({
         meta: {
-            name: 'release',
-            description: 'Release packaged helm charts to GitHub.',
+            name: 'push',
+            description: 'Push packaged helm charts to a remote registry.',
         },
         args: {
             directory: {
@@ -22,21 +22,20 @@ export function defineCLIReleaseCommand() {
                 default: '.',
                 description: 'Relative directory path (default: .)',
             },
-            owner: {
+            host: {
                 type: 'string',
-                description: 'Github owner name (user or organization)',
+                description: 'Registry host (e.g. ghcr.io)',
+                required: true,
             },
-            repo: {
+            username: {
                 type: 'string',
-                description: 'Github repository name',
+                description: 'Registry username',
+                required: true,
             },
-            branch: {
+            password: {
                 type: 'string',
-                description: 'Github pages branch',
-            },
-            token: {
-                type: 'string',
-                description: 'Git token',
+                description: 'Registry password',
+                required: true,
             },
         },
         async setup(ctx) {
@@ -44,15 +43,14 @@ export function defineCLIReleaseCommand() {
             await manager.loadMany(ctx.args.directory);
 
             try {
-                const charts = await manager.releaseCharts({
-                    repo: ctx.args.repo,
-                    owner: ctx.args.owner,
-                    token: ctx.args.token,
-                    branch: ctx.args.branch,
+                const charts = await manager.pushCharts({
+                    host: ctx.args.host,
+                    username: ctx.args.username,
+                    password: ctx.args.password,
                 });
 
                 for (let i = 0; i < charts.length; i++) {
-                    consola.success(`released chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
+                    consola.success(`pushed chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
                 }
 
                 process.exit(0);

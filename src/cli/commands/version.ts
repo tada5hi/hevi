@@ -16,6 +16,7 @@ export function defineCLIVersionCommand() {
     return defineCommand({
         meta: {
             name: 'version',
+            description: 'Versionize helm charts',
         },
         args: {
             directory: {

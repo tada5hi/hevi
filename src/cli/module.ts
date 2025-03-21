@@ -11,7 +11,11 @@ import path from 'node:path';
 import { ROOT_DIR } from '../constants';
 import {
     defineCLIHelmChartReleaserCommand,
-    defineCLIHelmCommand, defineCLIPackageCommand, defineCLIPushCommand, defineCLIVersionCommand,
+    defineCLIHelmCommand,
+    defineCLIPackageCommand,
+    defineCLIPushCommand,
+    defineCLIReleaseCommand,
+    defineCLIVersionCommand,
 } from './commands';
 
 export async function createCLIEntryPointCommand() {
@@ -29,7 +33,8 @@ export async function createCLIEntryPointCommand() {
         },
         subCommands: {
             package: defineCLIPackageCommand(),
-            release: defineCLIPushCommand(),
+            push: defineCLIPushCommand(),
+            release: defineCLIReleaseCommand(),
             version: defineCLIVersionCommand(),
 
             helm: defineCLIHelmCommand(),

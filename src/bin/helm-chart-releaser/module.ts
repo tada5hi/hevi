@@ -65,7 +65,7 @@ export class HelmChartReleaserBinary extends Binary {
     get directory() {
         const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
 
-        return path.join(basePath, 'helm-chart-releaser', this.version, this.platform, this.arch);
+        return path.join(basePath, 'hevi-helm-chart-releaser', this.version, this.platform, this.arch);
     }
 
     get name() {

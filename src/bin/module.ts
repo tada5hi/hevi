@@ -74,6 +74,7 @@ export abstract class Binary {
                 cwd: this.cwd,
                 env: {
                     ...process.env,
+                    HELM_EXPERIMENTAL_OCI: '1',
                     PATH: this.directory + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
                 },
             },
