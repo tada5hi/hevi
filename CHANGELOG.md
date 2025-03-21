@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/tada5hi/hevi/compare/v1.4.0...v1.5.0) (2025-03-21)
+
+
+### Bug Fixes
+
+* normalizing release chart options ([27f49d6](https://github.com/tada5hi/hevi/commit/27f49d6cec0cfa5946926d14e657253cda0fdd01))
+
+
+### Features
+
+* simplified versionize command + remove git capabilities ([8351b44](https://github.com/tada5hi/hevi/commit/8351b44b1c53fcf66a83e854d26434f786ac782b))
+
 # [1.4.0](https://github.com/tada5hi/hevi/compare/v1.3.0...v1.4.0) (2025-03-21)
 
 
