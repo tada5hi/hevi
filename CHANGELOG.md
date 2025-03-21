@@ -1,3 +1,19 @@
+# [1.4.0](https://github.com/tada5hi/hevi/compare/v1.3.0...v1.4.0) (2025-03-21)
+
+
+### Bug Fixes
+
+* release command ([ad81246](https://github.com/tada5hi/hevi/commit/ad812460cf2ef20c875c4c0c298c9ca264120218))
+
+
+### Features
+
+* abstract binary class for helm & helm-chart-releaser ([42afe75](https://github.com/tada5hi/hevi/commit/42afe750d4c9e2fcf86f3e888659a4be532cb4de))
+* binary proxy for helm & helm-chart-releaser ([d9e8276](https://github.com/tada5hi/hevi/commit/d9e8276593f96523e4c42436319b6918c301b0fb))
+* enable pushing to remote oci registry ([f29c16e](https://github.com/tada5hi/hevi/commit/f29c16e4cf44acd090bfb726947e7eab21d69dfe))
+* externalize download and unpack helpers ([989f82c](https://github.com/tada5hi/hevi/commit/989f82ca434e9208556c9be175f423216f5468c0))
+* rename version command to versionize ([ee2c546](https://github.com/tada5hi/hevi/commit/ee2c546d0f171507608125345e5e93a132c8155c))
+
 # [1.3.0](https://github.com/tada5hi/hevi/compare/v1.2.0...v1.3.0) (2025-03-19)
 
 
