@@ -36,12 +36,12 @@ export type HelmChartsReleaseOptionsNormalized = {
     /**
      * git repository
      */
-    repo: string,
+    repo?: string,
 
     /**
      * git owner
      */
-    owner: string,
+    owner?: string,
 
     /**
      * branch to upload charts + index file

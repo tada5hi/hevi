@@ -14,8 +14,8 @@ import type {
 
 export function normalizeHelmChartsReleaseOptions(input: HelmChartsReleaseOptions = {}) : HelmChartsReleaseOptionsNormalized {
     const options : HelmChartsReleaseOptionsNormalized = {
-        owner: input.owner || context.repo.owner,
-        repo: input.repo || context.repo.repo,
+        owner: input.owner,
+        repo: input.repo,
         branch: input.branch,
         token: input.token,
     };
@@ -24,11 +24,18 @@ export function normalizeHelmChartsReleaseOptions(input: HelmChartsReleaseOption
          * @see https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts
          */
     if (!options.branch) {
-        options.branch = process.env.GITHUB_REF || 'gh-pages';
+        options.branch = 'gh-pages';
     }
 
     if (!options.token) {
         options.token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || undefined;
+    }
+
+    if (process.env.GITHUB_TOKEN || process.env.GH_TOKEN || process.env.GITHUB_REF) {
+        if (!options.owner || !options.repo) {
+            options.owner = context.repo.owner;
+            options.repo = context.repo.repo;
+        }
     }
 
     return options;

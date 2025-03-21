@@ -188,19 +188,24 @@ export class HelmChartManager {
         const options = normalizeHelmChartsReleaseOptions(input);
 
         const uploadArgs : string[] = [
-            '-o',
-            options.owner,
-            '-r',
-            options.repo,
             '--package-path',
             '.helm-packages',
         ];
 
+        if (options.owner && options.repo) {
+            uploadArgs.push(
+                '-o',
+                options.owner,
+                '-r',
+                options.repo,
+            );
+        }
+
         if (options.token) {
-            uploadArgs.push(...['-t', options.token]);
+            uploadArgs.push('-t', options.token);
         }
         if (options.branch) {
-            uploadArgs.push(...['--pages-branch', options.branch]);
+            uploadArgs.push('--pages-branch', options.branch);
         }
 
         // release step
