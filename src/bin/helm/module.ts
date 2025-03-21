@@ -8,22 +8,16 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import type { Options } from 'tinyexec';
-import { download, executeShellCommand } from '../../utils';
+import { download } from '../../utils';
+import { Binary } from '../module';
 import type { HelmBinOptions } from './types';
 
-export class HelmBinary {
-    protected version: string;
-
-    protected arch : string;
-
-    protected platform: string;
-
-    protected cwd : string;
-
+export class HelmBinary extends Binary {
     // ---------------------------------------------------------------------------
 
     constructor(options: HelmBinOptions = {}) {
+        super();
+
         this.version = options.version || '3.17.2';
         this.platform = options.platform || os.platform();
         this.arch = options.arch || os.arch();
@@ -32,64 +26,26 @@ export class HelmBinary {
 
     // ---------------------------------------------------------------------------
 
-    async execute(args: string[]): Promise<string> {
-        const options = this.buildShellOptions();
-
-        let execPath :string | undefined;
-        try {
-            execPath = await executeShellCommand(
-                'which',
-                [this.execFileName],
-                options,
-            );
-        } catch (e) {
-            // todo: do nothing
-        }
-
-        if (execPath) {
-            return executeShellCommand(this.execFileName, args, options);
-        }
-
-        try {
-            await fs.promises.access(this.execFilePath, fs.constants.F_OK);
-        } catch (e) {
-            await this.download();
-        }
-
-        try {
-            await fs.promises.access(this.execFilePath, fs.constants.X_OK);
-        } catch (e) {
-            await fs.promises.chmod(this.execFilePath, 0o755);
-        }
-
-        // fix EBUSY (nodejs)
-        await new Promise<void>((resolve) => {
-            setTimeout(resolve, 100);
-        });
-
-        return executeShellCommand(
-            this.execFileName,
-            args,
-            options,
-        );
-    }
-
     async download() {
-        if (!this.isPlatformSupportedForDownload(this.platform)) {
+        if (
+            this.platform !== 'darwin' &&
+            this.platform !== 'win32' &&
+            this.platform !== 'linux'
+        ) {
             throw new Error(`Platform ${this.platform} has no remote source.`);
         }
 
         await download({
-            directory: this.directoryPath,
+            directory: this.directory,
             url: this.downloadURL,
             name: (name) => path.basename(name),
-            filter: (name) => name.endsWith(this.execFileName),
+            filter: (name) => name.endsWith(this.name),
         });
 
         try {
-            await fs.promises.access(this.execFilePath, fs.constants.F_OK);
+            await fs.promises.access(this.path, fs.constants.F_OK);
         } catch (e) {
-            throw new Error(`The downloaded binary directory does not contain a ${this.execFileName} file.`);
+            throw new Error(`The downloaded binary directory does not contain a ${this.name} file.`);
         }
     }
 
@@ -107,39 +63,21 @@ export class HelmBinary {
 
     // ---------------------------------------------------------------------------
 
-    get directoryPath() {
+    get directory() {
         const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
 
         return path.join(basePath, 'hevi-helm', this.version, this.platform, this.arch);
     }
 
-    get execFilePath() {
-        return path.join(this.directoryPath, this.execFileName);
+    get path() {
+        return path.join(this.directory, this.name);
     }
 
-    get execFileName() {
+    get name() {
         if (this.platform === 'win32') {
             return 'helm.exe';
         }
 
         return 'helm';
-    }
-
-    // ---------------------------------------------------------------------------
-
-    private isPlatformSupportedForDownload(platform: string): boolean {
-        return platform === 'darwin' || platform === 'win32' || platform === 'linux';
-    }
-
-    private buildShellOptions() : Partial<Options> {
-        return {
-            nodeOptions: {
-                cwd: this.cwd,
-                env: {
-                    ...process.env,
-                    PATH: this.directoryPath + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
-                },
-            },
-        };
     }
 }
