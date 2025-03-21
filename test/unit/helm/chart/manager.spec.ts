@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { HelmChartManager } from '../../../src';
+import { HelmChartManager } from '../../../../src';
 
 describe('helm', () => {
     let manager : HelmChartManager;

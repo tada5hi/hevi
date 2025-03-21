@@ -5,8 +5,4 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export * from './helm';
-export * from './helm-chart-releaser';
-export * from './package';
-export * from './release';
-export * from './version';
+export * from './module';

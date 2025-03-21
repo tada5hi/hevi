@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025.
+ * Copyright (c) 2025-2025.
  * Author Peter Placzek (tada5hi)
  * For the full copyright and license information,
  * view the LICENSE file that was distributed with this source code.
@@ -9,11 +9,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import type { Options } from 'tinyexec';
-import { download, executeShellCommand } from '../../../utils';
-import { HELM_CHART_RELEASER_NAME } from './constants';
-import type { HelmReleaserOptions } from './types';
+import { download, executeShellCommand } from '../../utils';
+import type { HelmBinOptions } from './types';
 
-export class HelmReleaser {
+export class HelmBinary {
     protected version: string;
 
     protected arch : string;
@@ -22,12 +21,16 @@ export class HelmReleaser {
 
     protected cwd : string;
 
-    constructor(options: HelmReleaserOptions = {}) {
-        this.version = options.version || '1.7.0';
+    // ---------------------------------------------------------------------------
+
+    constructor(options: HelmBinOptions = {}) {
+        this.version = options.version || '3.17.2';
         this.platform = options.platform || os.platform();
         this.arch = options.arch || os.arch();
         this.cwd = options.cwd || process.cwd();
     }
+
+    // ---------------------------------------------------------------------------
 
     async execute(args: string[]): Promise<string> {
         const options = this.buildShellOptions();
@@ -50,7 +53,7 @@ export class HelmReleaser {
         try {
             await fs.promises.access(this.execFilePath, fs.constants.F_OK);
         } catch (e) {
-            await this.downloadExec();
+            await this.download();
         }
 
         try {
@@ -71,17 +74,16 @@ export class HelmReleaser {
         );
     }
 
-    async downloadExec() {
+    async download() {
         if (!this.isPlatformSupportedForDownload(this.platform)) {
             throw new Error(`Platform ${this.platform} has no remote source.`);
         }
 
-        const url = this.buildDownloadURL();
-
         await download({
-            directory: this.execDirectory,
-            url,
-            filter: (name) => name === this.execFileName,
+            directory: this.directoryPath,
+            url: this.downloadURL,
+            name: (name) => path.basename(name),
+            filter: (name) => name.endsWith(this.execFileName),
         });
 
         try {
@@ -89,43 +91,44 @@ export class HelmReleaser {
         } catch (e) {
             throw new Error(`The downloaded binary directory does not contain a ${this.execFileName} file.`);
         }
-
-        return this.execFilePath;
     }
 
-    private isPlatformSupportedForDownload(platform: string): boolean {
-        return platform === 'darwin' || platform === 'win32' || platform === 'linux';
+    get downloadURL() {
+        return `https://get.helm.sh/${this.downloadURLFileName}`;
     }
 
-    private buildDownloadURL() {
-        return `https://github.com/helm/chart-releaser/releases/download/v${this.version}/${this.buildDownloadFileName()}`;
-    }
-
-    private buildDownloadFileName() {
+    get downloadURLFileName() {
         const arch = this.arch === 'x64' ? 'amd64' : this.arch;
         if (this.platform === 'win32') {
-            return `chart-releaser_${this.version}_windows_${arch}.zip`;
+            return `helm-v${this.version}-windows-${arch}.zip`;
         }
-        return `chart-releaser_${this.version}_${this.platform}_${arch}.tar.gz`;
+        return `helm-v${this.version}-${this.platform}-${arch}.tar.gz`;
     }
 
-    get execDirectory() {
+    // ---------------------------------------------------------------------------
+
+    get directoryPath() {
         const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
 
-        // todo: rename to hevi-helm-chart-releaser
-        return path.join(basePath, HELM_CHART_RELEASER_NAME, this.version, this.platform, this.arch);
+        return path.join(basePath, 'hevi-helm', this.version, this.platform, this.arch);
+    }
+
+    get execFilePath() {
+        return path.join(this.directoryPath, this.execFileName);
     }
 
     get execFileName() {
         if (this.platform === 'win32') {
-            return 'cr.exe';
+            return 'helm.exe';
         }
 
-        return 'cr';
+        return 'helm';
     }
 
-    get execFilePath() {
-        return path.join(this.execDirectory, this.execFileName);
+    // ---------------------------------------------------------------------------
+
+    private isPlatformSupportedForDownload(platform: string): boolean {
+        return platform === 'darwin' || platform === 'win32' || platform === 'linux';
     }
 
     private buildShellOptions() : Partial<Options> {
@@ -134,7 +137,7 @@ export class HelmReleaser {
                 cwd: this.cwd,
                 env: {
                     ...process.env,
-                    PATH: this.execDirectory + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
+                    PATH: this.directoryPath + (this.platform === 'win32' ? ';' : ':') + process.env.PATH,
                 },
             },
         };

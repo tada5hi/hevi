@@ -5,7 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export const HELM_CHART_META = Symbol.for('HEVI_HELM_CHART_META');
+import path from 'node:path';
+
+export const ROOT_DIR = path.join(__dirname, '..');
 
 export enum LogLevel {
     INFO = 'info',

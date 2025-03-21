@@ -14,27 +14,26 @@ import {
     normalizeHelmChartsReleaseOptions,
     normalizeHelmChartsVersionOptions,
 } from './helpers';
-import { executeShellCommand } from '../../utils/exec';
+import { buildDisplayNameEmail, executeShellCommand } from '../../utils';
 import { executeGitCommand, executeGitCommit, executeGitPush } from '../../git';
 
 import {
-    HelmReleaser,
-} from './releaser';
-import { buildDisplayNameEmail } from '../../utils';
+    HelmChartReleaserBinary,
+} from '../../bin';
 
 export class HelmChartManager {
     protected graph : Graph<string>;
 
     protected items: Record<string, HelmChartContainer>;
 
-    protected releaser : HelmReleaser;
+    protected releaser : HelmChartReleaserBinary;
 
     constructor() {
         this.graph = new Graph();
 
         this.items = {};
 
-        this.releaser = new HelmReleaser();
+        this.releaser = new HelmChartReleaserBinary();
     }
 
     /**

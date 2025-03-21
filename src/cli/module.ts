@@ -8,11 +8,15 @@
 import { defineCommand } from 'citty';
 import fs from 'node:fs';
 import path from 'node:path';
-import { defineCLIPackageCommand, defineCLIPushCommand, defineCLIVersionCommand } from './commands';
+import { ROOT_DIR } from '../constants';
+import {
+    defineCLIHelmChartReleaserCommand,
+    defineCLIHelmCommand, defineCLIPackageCommand, defineCLIPushCommand, defineCLIVersionCommand,
+} from './commands';
 
 export async function createCLIEntryPointCommand() {
     const pkgRaw = await fs.promises.readFile(
-        path.join(__dirname, '..', 'package.json'),
+        path.join(ROOT_DIR, 'package.json'),
         { encoding: 'utf8' },
     );
     const pkg = JSON.parse(pkgRaw);
@@ -27,6 +31,9 @@ export async function createCLIEntryPointCommand() {
             package: defineCLIPackageCommand(),
             release: defineCLIPushCommand(),
             version: defineCLIVersionCommand(),
+
+            helm: defineCLIHelmCommand(),
+            helmChartReleaser: defineCLIHelmChartReleaserCommand(),
         },
     });
 }

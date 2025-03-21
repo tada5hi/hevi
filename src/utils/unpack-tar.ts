@@ -11,7 +11,8 @@ import type { Readable } from 'node:stream';
 import { Parser } from 'tar';
 
 type Options = {
-    filter?: (name: string) => boolean
+    filter?: (name: string) => boolean,
+    name?: (name: string) => string,
 };
 export async function unpackTar(
     stream: Readable,
@@ -27,7 +28,15 @@ export async function unpackTar(
             return true;
         },
         onReadEntry: (entry) => {
-            const destinationPath = path.join(directory, entry.path);
+            const localPath = options.name ?
+                options.name(entry.path) :
+                entry.path;
+
+            const destinationPath = path.join(directory, localPath);
+            const destinationDirectoryPath = path.dirname(destinationPath);
+
+            fs.promises.mkdir(destinationDirectoryPath, { recursive: true });
+
             const destinationStream = fs.createWriteStream(destinationPath);
 
             entry.pipe(destinationStream);

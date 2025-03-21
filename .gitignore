@@ -17,3 +17,7 @@ hr
 hr.exe
 .cr-release-packages
 .cr-index
+!src/bin
+!src/bin/*
+!test/unit/bin
+!test/unit/bin/*

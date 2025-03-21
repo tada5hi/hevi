@@ -5,17 +5,19 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type HelmReleaserOptions = {
+export type HelmBinOptions = {
     /**
-     * helm releaser version
+     * helm version
      *
-     * default: 1.7.0
+     * default: 3.17.2
      */
     version?: string,
+
     /**
      * Machine arch (x64, ...)
      */
     arch?: string,
+
     /**
      * Machine platform (win32, linux, ...)
      */

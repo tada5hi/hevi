@@ -12,7 +12,8 @@ import { fromBuffer } from 'yauzl';
 import { streamToBuffer } from './stream-to-buffer';
 
 type Options = {
-    filter?: (name: string) => boolean
+    filter?: (name: string) => boolean,
+    name?: (name: string) => string,
 };
 
 export async function unpackZip(
@@ -48,7 +49,15 @@ export async function unpackZip(
                             zipFile.readEntry();
                         });
 
-                        const destinationPath = path.join(directory, entry.fileName);
+                        const localPath = options.name ?
+                            options.name(entry.fileName) :
+                            entry.fileName;
+
+                        const destinationPath = path.join(directory, localPath);
+                        const destinationDirectoryPath = path.dirname(destinationPath);
+
+                        fs.promises.mkdir(destinationDirectoryPath, { recursive: true });
+
                         const destinationStream = fs.createWriteStream(destinationPath);
 
                         entryStream.pipe(destinationStream);

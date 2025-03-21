@@ -14,6 +14,7 @@ import { unpackZip } from './unpack-zip';
 
 type DownloaderOptions = {
     filter?: (fileName: string) => boolean,
+    name?: (name: string) => string,
     cwd?: string,
     directory: string,
     url: string
@@ -32,13 +33,16 @@ export async function download(options: DownloaderOptions) {
     const response = await hapic.get(options.url, { responseType: 'stream' });
     const readStream = stream.Readable.fromWeb(response.data as any);
 
-    if (options.url.endsWith('zip')) {
+    const isZip = options.url.substring(options.url.length - 3) === 'zip';
+    if (isZip) {
         await unpackZip(readStream, destinationPath, {
             filter: options.filter,
+            name: options.name,
         });
     } else {
         await unpackTar(readStream, destinationPath, {
             filter: options.filter,
+            name: options.name,
         });
     }
 }

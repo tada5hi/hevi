@@ -8,5 +8,4 @@
 export * from './helpers';
 export * from './manager';
 export * from './module';
-export * from './releaser';
 export * from './types';
