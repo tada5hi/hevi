@@ -6,16 +6,10 @@
  */
 
 import fs from 'node:fs';
-import hapic from 'hapic';
 import os from 'node:os';
 import path from 'node:path';
-import type { PassThrough, Readable, Writable } from 'node:stream';
-import stream from 'node:stream';
 import type { Options } from 'tinyexec';
-import { fromBuffer } from 'yauzl';
-import { Parser } from 'tar';
-import { executeShellCommand } from '../../../utils/exec';
-import { streamToBuffer } from '../../../utils/stream-to-buffer';
+import { download, executeShellCommand } from '../../../utils';
 import { HELM_CHART_RELEASER_NAME } from './constants';
 import type { HelmReleaserOptions } from './types';
 
@@ -84,92 +78,19 @@ export class HelmReleaser {
 
         const url = this.buildDownloadURL();
 
-        await fs.promises.mkdir(this.execDirectory, { recursive: true });
+        await download({
+            directory: this.execDirectory,
+            url,
+            filter: (name) => name === this.execFileName,
+        });
 
-        const writeStream = fs.createWriteStream(this.execFilePath);
-        const response = await hapic.get(url, { responseType: 'stream' });
-
-        const readStream = stream.Readable.fromWeb(response.data as any);
-
-        await this.unpack(readStream, writeStream);
-
-        return this.execFilePath;
-    }
-
-    protected async unpack(input: Readable, output: Writable | PassThrough) {
-        if (this.platform === 'win32') {
-            await this.unpackZip(input, output);
-            return;
+        try {
+            await fs.promises.access(this.execFilePath, fs.constants.F_OK);
+        } catch (e) {
+            throw new Error(`The downloaded binary directory does not contain a ${this.execFileName} file.`);
         }
 
-        await this.unpackTar(input, output);
-    }
-
-    protected async unpackZip(input: Readable, output: Writable | PassThrough) {
-        const buffer = await streamToBuffer(input);
-
-        return new Promise<void>((resolve, reject) => {
-            fromBuffer(buffer, { lazyEntries: true }, (err, zipFile) => {
-                if (err) {
-                    reject(err);
-                }
-
-                zipFile.readEntry();
-                zipFile.on('entry', (entry) => {
-                    if ((entry.fileName as string).endsWith('.exe')) {
-                        zipFile.openReadStream(entry, (
-                            entryErr,
-                            entryStream,
-                        ) => {
-                            if (entryErr) {
-                                reject(entryErr);
-                                return;
-                            }
-
-                            entryStream.on('end', () => {
-                                resolve();
-                            });
-
-                            entryStream.pipe(output);
-                        });
-                    } else {
-                        zipFile.readEntry();
-                    }
-                });
-            });
-        });
-    }
-
-    protected async unpackTar(input: Readable, output: Writable | PassThrough) {
-        let found : boolean = false;
-        const parser = new Parser({
-            filter: (path) => {
-                if (path === 'cr') {
-                    found = true;
-                    return true;
-                }
-
-                return false;
-            },
-            onReadEntry: (entry) => {
-                entry.pipe(output);
-            },
-        });
-
-        return new Promise<void>((
-            resolve,
-            reject,
-        ) => {
-            parser.on('end', () => {
-                if (!found) {
-                    reject(new Error('The executable was not found in the tar archive.'));
-                }
-
-                resolve();
-            });
-
-            input.pipe(parser);
-        });
+        return this.execFilePath;
     }
 
     private isPlatformSupportedForDownload(platform: string): boolean {
@@ -191,15 +112,16 @@ export class HelmReleaser {
     get execDirectory() {
         const basePath = process.env.RUNNER_TOOL_CACHE || os.tmpdir();
 
+        // todo: rename to hevi-helm-chart-releaser
         return path.join(basePath, HELM_CHART_RELEASER_NAME, this.version, this.platform, this.arch);
     }
 
     get execFileName() {
         if (this.platform === 'win32') {
-            return `${HELM_CHART_RELEASER_NAME}.exe`;
+            return 'cr.exe';
         }
 
-        return HELM_CHART_RELEASER_NAME;
+        return 'cr';
     }
 
     get execFilePath() {

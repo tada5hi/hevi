@@ -6,3 +6,5 @@
  */
 
 export * from './display-name';
+export * from './exec';
+export * from './download';
