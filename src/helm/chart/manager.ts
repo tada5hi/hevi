@@ -14,8 +14,7 @@ import {
     normalizeHelmChartsReleaseOptions,
     normalizeHelmChartsVersionOptions,
 } from './helpers';
-import { buildDisplayNameEmail, executeShellCommand } from '../../utils';
-import { executeGitCommand, executeGitCommit, executeGitPush } from '../../git';
+import { executeShellCommand } from '../../utils';
 
 import {
     HelmBinary,
@@ -109,9 +108,9 @@ export class HelmChartManager {
             const chart = this.items[graphFlat[i]];
 
             if (options.version) {
-                chart.setVersion(options.version, options.versionType);
+                chart.setVersion(options.version);
             } else {
-                chart.bumpVersion(options.versionType);
+                chart.bumpVersion();
             }
 
             const adjacentPaths = this.graph.adjacent(graphFlat[i]);
@@ -128,32 +127,8 @@ export class HelmChartManager {
                 });
             }
 
-            if (options.commit) {
+            if (!options.dryRun) {
                 await chart.save();
-
-                await executeGitCommand({
-                    args: [
-                        'add',
-                        this.items[i].directoryPathRelativePosix,
-                    ],
-                });
-            }
-        }
-
-        if (options.commit) {
-            await executeGitCommit({
-                message: 'chore: update helm charts',
-                userName: options.commitUserName,
-                userEmail: options.commitUserEmail,
-                author: options.commitAuthor ?
-                    options.commitAuthor :
-                    buildDisplayNameEmail(options.commitUserName, options.commitUserEmail),
-            });
-
-            if (options.push) {
-                await executeGitPush({
-                    branch: options.branch,
-                });
             }
         }
 

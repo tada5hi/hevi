@@ -16,23 +16,3 @@ export enum LogLevel {
     SUCCESS = 'success',
     ERROR = 'error',
 }
-
-export enum Provider {
-    GITHUB = 'github',
-}
-
-export enum HelmVersionType {
-    APP = 'app',
-    DEFAULT = 'default',
-}
-
-export enum VersionStrategy {
-    SET = 'set',
-    BUMP = 'bump',
-}
-
-export enum SemverLevel {
-    MAJOR = 'major',
-    MINOR = 'minor',
-    PATCH = 'patch',
-}

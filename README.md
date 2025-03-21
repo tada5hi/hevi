@@ -28,14 +28,8 @@ npm install hevi --save-dev
 
 ```bash
 npx hevi versionize <directory> \
-  --token <token> \
   --version <version> \
-  --versionType <versionType> \
-  --commit \
-  --commitUserEmail <commitUserEmail> \
-  --commitUserName <commitUserName> \
-  --commitAuthor <commitAuthor> \
-  --push 
+  --commit
 ```
 
 #### token (optional)
@@ -43,7 +37,7 @@ npx hevi versionize <directory> \
 - Description: Token for github, gitlab, ...
 
 #### directory (optional)
-- Type: `String`
+- Type: `Positional`
 - Default: `.`
 - Description: Relative path where helm charts are located.
 
@@ -51,30 +45,8 @@ npx hevi versionize <directory> \
 - Type: `String`
 - Description: Semver version (x.y.z) otherwise existing version will be patched.
 
-#### versionType (optional)
-- Type: `String`
-- Description: Specify if appVersion or version property should be incremented. 
-
-#### commit (optional)
+#### dryRun (optional)
 - Type: `Boolean`
 - Default: `false`
-- Description: Commit changes
-
-#### commitUserEmail (optional)
-- Type: `String`
-- Description: Commit user email
-
-#### commitUserName (optional)
-- Type: `String`
-- Description: Commit user name
-
-#### commitAuthor (optional)
-- Type: `String`
-- Description: Commit author
-
-#### push (optional)
-- Type: `Boolean`
-- Default: `false`
-- Description: Push changes
-
+- Description: Commit/Write changes to the file system.
 

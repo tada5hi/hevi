@@ -7,9 +7,4 @@
 
 import type { LogLevel } from './constants';
 
-export type DisplayNameEmail = {
-    name: string
-    email: string
-};
-
 export type LogFn = (message: string, level?: `${LogLevel}`) => void;

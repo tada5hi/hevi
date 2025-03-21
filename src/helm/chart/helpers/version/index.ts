@@ -6,5 +6,4 @@
  */
 
 export * from './normalize';
-export * from './set';
 export * from './types';

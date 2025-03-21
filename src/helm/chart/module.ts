@@ -8,9 +8,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { stringify } from 'yaml';
-import type { HelmVersionType } from '../../constants';
+import { bumpVersion } from '../../version-bump';
 import { HelmChartDependencyContainer } from './dependency';
-import { bumpHelmChartVersion, setHelmChartVersion } from './helpers';
 import type { HelmChart } from './types';
 
 type HelmChartContainerOptions = {
@@ -53,12 +52,14 @@ export class HelmChartContainer {
 
     // -----------------------------------------------------------------
 
-    setVersion(version: string, type?: HelmVersionType | string) {
-        setHelmChartVersion(this.data, version, type);
+    setVersion(version: string) {
+        this.data.version = version;
     }
 
-    bumpVersion(type?: HelmVersionType | string) {
-        bumpHelmChartVersion(this.data, type);
+    bumpVersion() {
+        if (this.data.version) {
+            this.data.version = bumpVersion(this.data.version) || this.data.version;
+        }
     }
 
     // -----------------------------------------------------------------
