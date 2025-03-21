@@ -32,10 +32,6 @@ npx hevi versionize <directory> \
   --commit
 ```
 
-#### token (optional)
-- Type: `String`
-- Description: Token for github, gitlab, ...
-
 #### directory (optional)
 - Type: `Positional`
 - Default: `.`
