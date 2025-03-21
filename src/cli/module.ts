@@ -15,7 +15,7 @@ import {
     defineCLIPackageCommand,
     defineCLIPushCommand,
     defineCLIReleaseCommand,
-    defineCLIVersionCommand,
+    defineCLIVersionizeCommand,
 } from './commands';
 
 export async function createCLIEntryPointCommand() {
@@ -35,7 +35,7 @@ export async function createCLIEntryPointCommand() {
             package: defineCLIPackageCommand(),
             push: defineCLIPushCommand(),
             release: defineCLIReleaseCommand(),
-            version: defineCLIVersionCommand(),
+            versionize: defineCLIVersionizeCommand(),
 
             helm: defineCLIHelmCommand(),
             helmChartReleaser: defineCLIHelmChartReleaserCommand(),

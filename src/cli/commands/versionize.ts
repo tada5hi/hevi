@@ -12,10 +12,10 @@ import process from 'node:process';
 import { HelmVersionType, Provider } from '../../constants';
 import { HelmChartManager } from '../../helm';
 
-export function defineCLIVersionCommand() {
+export function defineCLIVersionizeCommand() {
     return defineCommand({
         meta: {
-            name: 'version',
+            name: 'versionize',
             description: 'Versionize helm charts',
         },
         args: {
@@ -101,7 +101,7 @@ export function defineCLIVersionCommand() {
 
                 for (let i = 0; i < charts.length; i++) {
                     consola.success(
-                        `versioned chart ${charts[i].data.name} (${charts[i].directoryPathRelativePosix})`,
+                        `versionized chart ${charts[i].data.name} (${charts[i].directoryPathRelativePosix})`,
                         { version: charts[i].data.version, appVersion: charts[i].data.appVersion },
                     );
                 }

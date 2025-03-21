@@ -14,7 +14,7 @@ Versioner & Releaser for Helm Charts
 **Table of Contents**
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Version](#version)
+  - [Versionize](#versionize)
 
 ## Installation
 
@@ -24,10 +24,10 @@ npm install hevi --save-dev
 
 ## Usage
 
-### Version
+### Versionize
 
 ```bash
-npx hevi version <directory> \
+npx hevi versionize <directory> \
   --token <token> \
   --version <version> \
   --versionType <versionType> \

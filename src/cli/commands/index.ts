@@ -10,4 +10,4 @@ export * from './helm-chart-releaser';
 export * from './package';
 export * from './push';
 export * from './release';
-export * from './version';
+export * from './versionize';
