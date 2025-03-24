@@ -148,12 +148,14 @@ export class HelmChartManager {
         for (let i = 0; i < graphFlat.length; i++) {
             const chart = this.items[graphFlat[i]];
 
-            await this.helmChartReleaserBinary.execute([
-                'package',
-                chart.directoryPathRelativePosix,
-                '--package-path',
-                '.helm-packages',
-            ]);
+            if (chart) {
+                await this.helmChartReleaserBinary.execute([
+                    'package',
+                    chart.directoryPathRelativePosix,
+                    '--package-path',
+                    '.helm-packages',
+                ]);
+            }
         }
 
         return Object.values(this.items);
@@ -224,12 +226,13 @@ export class HelmChartManager {
 
         for (let i = 0; i < graphFlat.length; i++) {
             const chart = this.items[graphFlat[i]];
-
-            await this.helmBinary.execute([
-                'push',
-                `.helm-packages/${chart.data.name}-${chart.data.version}`,
-                `oci://${options.host}`,
-            ]);
+            if (chart) {
+                await this.helmBinary.execute([
+                    'push',
+                    `.helm-packages/${chart.data.name}-${chart.data.version}`,
+                    `oci://${options.host}`,
+                ]);
+            }
         }
 
         await this.helmBinary.execute(['registry', 'logout', options.host]);
