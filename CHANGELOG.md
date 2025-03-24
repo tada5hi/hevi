@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/tada5hi/hevi/compare/v1.5.0...v1.6.0) (2025-03-24)
+
+
+### Bug Fixes
+
+* change output directory for helm packages and index ([92065db](https://github.com/tada5hi/hevi/commit/92065db78df971051c3017cd9c2b3aea118efb2f))
+* ensure dependency is included in scanned directories ([703e8b8](https://github.com/tada5hi/hevi/commit/703e8b84829593d9f61df1e7ad0f709c5fd819b9))
+
+
+### Features
+
+* add helm repos on the fly ([65fe069](https://github.com/tada5hi/hevi/commit/65fe069f1d0605c6c5ed118e6b1c58443a36f108))
+* use native fs module for (rm|mk)dir ([733d56c](https://github.com/tada5hi/hevi/commit/733d56ca74d8ccce681632e413bedb7d601875bb))
+
 # [1.5.0](https://github.com/tada5hi/hevi/compare/v1.4.0...v1.5.0) (2025-03-21)
 
 
