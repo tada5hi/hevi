@@ -68,7 +68,7 @@ npx hevi package <directory>
 Push all charts, present in `<directory>` and packaged in .helm-packages to remote oci registry.
 
 ```bash
-npx hevi package <directory> \
+npx hevi push <directory> \
     --host <host> \
     --username <username> \
     --password <password>
