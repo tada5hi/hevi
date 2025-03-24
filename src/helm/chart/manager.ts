@@ -9,6 +9,7 @@ import { Graph, topologicalSort } from 'graph-data-structure';
 import { buildFilePath, load, locateMany } from 'locter';
 import fs from 'node:fs';
 import path from 'node:path';
+import { HELM_OUTPUT_INDEX_DIRECTORY, HELM_OUTPUT_PACKAGE_DIRECTORY } from './constants';
 import type { HelmChartsReleaseOptions, HelmChartsVersionizeOptions } from './helpers';
 import { HelmChartContainer } from './module';
 import {
@@ -146,11 +147,11 @@ export class HelmChartManager {
      * Package all scanned helm charts.
      */
     async packageCharts() : Promise<HelmChartContainer[]> {
-        await fs.promises.rm('.helm-index', { recursive: true, force: true });
-        await fs.promises.rm('.helm-packages', { recursive: true, force: true });
+        await fs.promises.rm(HELM_OUTPUT_INDEX_DIRECTORY, { recursive: true, force: true });
+        await fs.promises.rm(HELM_OUTPUT_PACKAGE_DIRECTORY, { recursive: true, force: true });
 
-        await fs.promises.mkdir('.helm-index', { recursive: true });
-        await fs.promises.mkdir('.helm-packages', { recursive: true });
+        await fs.promises.mkdir(HELM_OUTPUT_INDEX_DIRECTORY, { recursive: true });
+        await fs.promises.mkdir(HELM_OUTPUT_PACKAGE_DIRECTORY, { recursive: true });
 
         const graphFlat = topologicalSort(this.graph)
             .reverse();
@@ -186,7 +187,7 @@ export class HelmChartManager {
                 'package',
                 chart.directoryPathRelativePosix,
                 '--package-path',
-                '.helm-packages',
+                HELM_OUTPUT_PACKAGE_DIRECTORY,
             ]);
         }
 
@@ -211,7 +212,7 @@ export class HelmChartManager {
 
         const uploadArgs : string[] = [
             '--package-path',
-            '.helm-packages',
+            HELM_OUTPUT_PACKAGE_DIRECTORY,
         ];
 
         if (options.owner && options.repo) {
@@ -242,7 +243,7 @@ export class HelmChartManager {
             'index',
             '--push',
             '--index-path',
-            '.helm-index/index.yaml',
+            `${HELM_OUTPUT_INDEX_DIRECTORY}/index.yaml`,
             ...uploadArgs,
         ]);
 
@@ -279,7 +280,7 @@ export class HelmChartManager {
             if (chart) {
                 await this.helmBinary.execute([
                     'push',
-                    `.helm-packages/${chart.data.name}-${chart.data.version}`,
+                    `${HELM_OUTPUT_PACKAGE_DIRECTORY}/${chart.data.name}-${chart.data.version}`,
                     `oci://${options.host}`,
                 ]);
             }
