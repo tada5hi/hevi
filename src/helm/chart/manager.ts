@@ -145,17 +145,48 @@ export class HelmChartManager {
         const graphFlat = topologicalSort(this.graph)
             .reverse();
 
+        const repositories : Record<string, string> = {};
+
         for (let i = 0; i < graphFlat.length; i++) {
             const chart = this.items[graphFlat[i]];
-
-            if (chart) {
-                await this.helmChartReleaserBinary.execute([
-                    'package',
-                    chart.directoryPathRelativePosix,
-                    '--package-path',
-                    '.helm-packages',
-                ]);
+            if (!chart) {
+                continue;
             }
+
+            for (let j = 0; j < chart.dependencies.length; j++) {
+                const { repositoryWebURL } = chart.dependencies[j];
+                if (repositoryWebURL) {
+                    const webURL = new URL(repositoryWebURL);
+                    const webURLKey = `hevi:${webURL.hostname}${webURL.pathname.replaceAll('/', '.')}`;
+
+                    if (!repositories[webURLKey]) {
+                        repositories[webURLKey] = repositoryWebURL;
+
+                        await this.helmBinary.execute([
+                            'repo',
+                            'add',
+                            webURLKey,
+                            repositoryWebURL,
+                        ]);
+                    }
+                }
+            }
+
+            await this.helmChartReleaserBinary.execute([
+                'package',
+                chart.directoryPathRelativePosix,
+                '--package-path',
+                '.helm-packages',
+            ]);
+        }
+
+        const repositoryKeys = Object.keys(repositories);
+        for (let i = 0; i < repositoryKeys.length; i++) {
+            await this.helmBinary.execute([
+                'repo',
+                'remove',
+                repositoryKeys[i],
+            ]);
         }
 
         return Object.values(this.items);

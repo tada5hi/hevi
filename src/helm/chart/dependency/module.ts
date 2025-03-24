@@ -20,6 +20,8 @@ export class HelmChartDependencyContainer {
     ) {
         this.data = data;
         this.parent = parent;
+
+        this.clean();
     }
 
     get repositoryFilePath(): string | null {
@@ -33,5 +35,25 @@ export class HelmChartDependencyContainer {
         const relativePath = this.data.repository.substring(7);
 
         return path.resolve(this.parent.directoryPath, relativePath);
+    }
+
+    get repositoryWebURL() : string | null {
+        if (
+            !this.data.repository ||
+            (
+                this.data.repository.substring(0, 7) !== 'http://' &&
+                this.data.repository.substring(0, 8) !== 'https://'
+            )
+        ) {
+            return null;
+        }
+
+        return this.data.repository;
+    }
+
+    protected clean() {
+        if (this.data.repository) {
+            this.data.repository = this.data.repository.replaceAll('"', '');
+        }
     }
 }
