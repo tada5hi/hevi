@@ -7,6 +7,7 @@
 
 import { Graph, topologicalSort } from 'graph-data-structure';
 import { buildFilePath, load, locateMany } from 'locter';
+import fs from 'node:fs';
 import path from 'node:path';
 import type { HelmChartsReleaseOptions, HelmChartsVersionizeOptions } from './helpers';
 import { HelmChartContainer } from './module';
@@ -14,8 +15,6 @@ import {
     normalizeHelmChartsReleaseOptions,
     normalizeHelmChartsVersionOptions,
 } from './helpers';
-import { executeShellCommand } from '../../utils';
-
 import {
     HelmBinary,
     HelmChartReleaserBinary,
@@ -98,6 +97,11 @@ export class HelmChartManager {
         await Promise.all(loadPromises);
     }
 
+    /**
+     * Set/bump version of all scanned helm charts.
+     *
+     * @param input
+     */
     async versionizeCharts(input: HelmChartsVersionizeOptions = {}) {
         const options = normalizeHelmChartsVersionOptions(input);
 
@@ -106,6 +110,9 @@ export class HelmChartManager {
 
         for (let i = 0; i < graphFlat.length; i++) {
             const chart = this.items[graphFlat[i]];
+            if (!chart) {
+                continue;
+            }
 
             if (options.version) {
                 chart.setVersion(options.version);
@@ -135,12 +142,15 @@ export class HelmChartManager {
         return Object.values(this.items);
     }
 
+    /**
+     * Package all scanned helm charts.
+     */
     async packageCharts() : Promise<HelmChartContainer[]> {
-        await executeShellCommand('rm', ['-rf', '.helm-index']);
-        await executeShellCommand('rm', ['-rf', '.helm-packages']);
+        await fs.promises.rm('.helm-index', { recursive: true, force: true });
+        await fs.promises.rm('.helm-packages', { recursive: true, force: true });
 
-        await executeShellCommand('mkdir', ['-p', '.helm-index']);
-        await executeShellCommand('mkdir', ['-p', '.helm-packages']);
+        await fs.promises.mkdir('.helm-index', { recursive: true });
+        await fs.promises.mkdir('.helm-packages', { recursive: true });
 
         const graphFlat = topologicalSort(this.graph)
             .reverse();
@@ -192,6 +202,10 @@ export class HelmChartManager {
         return Object.values(this.items);
     }
 
+    /**
+     * Release all scanned helm charts to GitHub
+     * @param input
+     */
     async releaseCharts(input: HelmChartsReleaseOptions) : Promise<HelmChartContainer[]> {
         const options = normalizeHelmChartsReleaseOptions(input);
 
@@ -235,6 +249,11 @@ export class HelmChartManager {
         return Object.values(this.items);
     }
 
+    /**
+     * Push all scanned helm charts to specific oci registry.
+     *
+     * @param options
+     */
     async pushCharts(options: HelmChartManagerPushOptions) {
         try {
             await this.helmBinary.execute(['registry', 'logout', options.host]);
