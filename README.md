@@ -15,6 +15,8 @@ Versioner & Releaser for Helm Charts
 - [Installation](#installation)
 - [Usage](#usage)
   - [Versionize](#versionize)
+  - [Package](#package)
+  - [Push](#push)
 
 ## Installation
 
@@ -26,10 +28,12 @@ npm install hevi --save-dev
 
 ### Versionize
 
+Set version of all helm charts in `<directory>` to `<version>`.
+
 ```bash
 npx hevi versionize <directory> \
   --version <version> \
-  --commit
+  --dryRun
 ```
 
 #### directory (optional)
@@ -46,3 +50,43 @@ npx hevi versionize <directory> \
 - Default: `false`
 - Description: Commit/Write changes to the file system.
 
+### Package
+
+Package all helm charts in `<directory>` to .helm-packages.
+
+```bash
+npx hevi package <directory>
+```
+
+#### directory (optional)
+- Type: `Positional`
+- Default: `.`
+- Description: Relative path where helm charts are located.
+
+### Push
+
+Push all charts, present in `<directory>` and packaged in .helm-packages to remote oci registry.
+
+```bash
+npx hevi package <directory> \
+    --host <host> \
+    --username <username> \
+    --password <password>
+```
+
+#### directory (optional)
+- Type: `Positional`
+- Default: `.`
+- Description: Relative path where helm charts are located.
+
+#### host
+- Type: `String`
+- Description: Registry host e.g. ghcr.io
+
+#### username
+- Type: `String`
+- Description: Registry username
+
+#### password
+- Type: `String`
+- Description: Registry password
