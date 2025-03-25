@@ -1,3 +1,16 @@
+# [1.7.0](https://github.com/tada5hi/hevi/compare/v1.6.0...v1.7.0) (2025-03-25)
+
+
+### Bug Fixes
+
+* registering charts ([aa1dbdd](https://github.com/tada5hi/hevi/commit/aa1dbdd3d1d134d74575ea4f366836b56d6923c8))
+* typo in README.md ([9aff9fa](https://github.com/tada5hi/hevi/commit/9aff9faaa6d88e5ef8f07686cc105bdd41cbc9aa))
+
+
+### Features
+
+* use helm binary for packaging ([4db3efc](https://github.com/tada5hi/hevi/commit/4db3efc14cc78a326b22ba844cbede2421aed92e))
+
 # [1.6.0](https://github.com/tada5hi/hevi/compare/v1.5.0...v1.6.0) (2025-03-24)
 
 
