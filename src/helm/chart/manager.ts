@@ -46,31 +46,25 @@ export class HelmChartManager {
      * @param file
      */
     async load(file: string) {
-        let filePath = path.isAbsolute(file) ?
+        const filePath = path.isAbsolute(file) ?
             file :
             path.join(process.cwd(), file);
-
-        if (
-            !filePath.endsWith('Chart.yml') &&
-            !filePath.endsWith('Chart.yaml')
-        ) {
-            filePath = path.join(process.cwd(), filePath);
-        }
 
         const data = await load(filePath);
         const container = new HelmChartContainer(data, {
             path: filePath,
         });
 
-        this.items[container.directoryPath] = container;
+        if (!this.items[container.directoryPath]) {
+            this.items[container.directoryPath] = container;
 
-        this.graph.removeNode(container.directoryPath);
-        this.graph.addNode(container.directoryPath);
+            this.graph.addNode(container.directoryPath);
 
-        for (let i = 0; i < container.dependencies.length; i++) {
-            const dependencyRepositoryPath = container.dependencies[i].repositoryFilePath;
-            if (dependencyRepositoryPath) {
-                this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
+            for (let i = 0; i < container.dependencies.length; i++) {
+                const dependencyRepositoryPath = container.dependencies[i].repositoryFilePath;
+                if (dependencyRepositoryPath) {
+                    this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
+                }
             }
         }
     }
