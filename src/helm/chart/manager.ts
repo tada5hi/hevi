@@ -177,10 +177,16 @@ export class HelmChartManager {
                 }
             }
 
-            await this.helmChartReleaserBinary.execute([
+            await this.helmBinary.execute([
+                'dependency',
+                'update',
+                chart.directoryPathRelativePosix,
+            ]);
+
+            await this.helmBinary.execute([
                 'package',
                 chart.directoryPathRelativePosix,
-                '--package-path',
+                '--destination',
                 HELM_OUTPUT_PACKAGE_DIRECTORY,
             ]);
         }
