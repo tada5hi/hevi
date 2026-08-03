@@ -25,6 +25,17 @@ export type HelmChartsReleaseOptions = {
      * branch to upload charts + index file
      */
     branch?: string,
+
+    /**
+     * Let GitHub generate the name and body of the release from the merged
+     * pull requests, instead of falling back to the chart description.
+     *
+     * Only relevant when chart-releaser owns the release creation, which is
+     * the case when release-please runs with skip-github-release.
+     *
+     * default: false
+     */
+    generateReleaseNotes?: boolean,
 };
 
 export type HelmChartsReleaseOptionsNormalized = {
@@ -47,4 +58,11 @@ export type HelmChartsReleaseOptionsNormalized = {
      * branch to upload charts + index file
      */
     branch?: string,
+
+    /**
+     * Let GitHub generate the name and body of the release.
+     *
+     * default: false
+     */
+    generateReleaseNotes: boolean,
 };

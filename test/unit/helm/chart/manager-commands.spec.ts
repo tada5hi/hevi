@@ -165,6 +165,29 @@ describe('helm > chart > manager > commands', () => {
         ]);
     });
 
+    it('should not generate release notes by default', async () => {
+        await manager.releaseCharts({ owner: 'tada5hi', repo: 'hevi' });
+
+        expect(helmChartReleaserBinary.calls[0]).not.toContain('--generate-release-notes');
+    });
+
+    it('should pass generate-release-notes to upload but never to index', async () => {
+        await manager.releaseCharts({
+            owner: 'tada5hi',
+            repo: 'hevi',
+            generateReleaseNotes: true,
+        });
+
+        const [upload, index] = helmChartReleaserBinary.calls;
+
+        expect(upload?.[0]).toEqual('upload');
+        expect(upload).toContain('--generate-release-notes');
+
+        // `cr index` rejects the flag, so it must not leak into the shared args
+        expect(index?.[0]).toEqual('index');
+        expect(index).not.toContain('--generate-release-notes');
+    });
+
     it('should push charts to an oci registry', async () => {
         await manager.pushCharts({
             host: 'ghcr.io',
@@ -193,5 +216,68 @@ describe('helm > chart > manager > commands', () => {
         ]);
 
         expect(helmBinary.calls[helmBinary.calls.length - 1]).toEqual(['registry', 'logout', 'ghcr.io']);
+    });
+
+    it('should not probe the registry unless skipExisting is set', async () => {
+        await manager.pushCharts({
+            host: 'ghcr.io',
+            username: 'user',
+            password: 'pass',
+        });
+
+        expect(helmBinary.callsOf('show')).toEqual([]);
+    });
+
+    it('should skip charts already present in the registry', async () => {
+        // `helm show chart` succeeding means the version is already published
+        const charts = await manager.pushCharts({
+            host: 'ghcr.io',
+            username: 'user',
+            password: 'pass',
+            skipExisting: true,
+        });
+
+        expect(helmBinary.callsOf('show')).toEqual([
+            ['show', 'chart', 'oci://ghcr.io/bar', '--version', '0.1.0'],
+            ['show', 'chart', 'oci://ghcr.io/foo', '--version', '0.1.0'],
+        ]);
+
+        expect(helmBinary.callsOf('push')).toEqual([]);
+        expect(charts).toEqual([]);
+    });
+
+    it('should push charts that are absent from the registry', async () => {
+        helmBinary.failWhen = (args) => args[0] === 'show';
+
+        const charts = await manager.pushCharts({
+            host: 'ghcr.io',
+            username: 'user',
+            password: 'pass',
+            skipExisting: true,
+        });
+
+        expect(helmBinary.callsOf('push').map((args) => args[1])).toEqual([
+            '.hevi/packages/bar-0.1.0.tgz',
+            '.hevi/packages/foo-0.1.0.tgz',
+        ]);
+
+        expect(charts.map((chart) => chart.data.name)).toEqual(['bar', 'foo']);
+    });
+
+    it('should push only the charts that are missing', async () => {
+        helmBinary.failWhen = (args) => args[0] === 'show' && args[2] === 'oci://ghcr.io/foo';
+
+        const charts = await manager.pushCharts({
+            host: 'ghcr.io',
+            username: 'user',
+            password: 'pass',
+            skipExisting: true,
+        });
+
+        expect(helmBinary.callsOf('push').map((args) => args[1])).toEqual([
+            '.hevi/packages/foo-0.1.0.tgz',
+        ]);
+
+        expect(charts.map((chart) => chart.data.name)).toEqual(['foo']);
     });
 });

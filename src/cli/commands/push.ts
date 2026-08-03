@@ -38,6 +38,11 @@ export function defineCLIPushCommand() {
                 description: 'Registry password',
                 required: true,
             },
+            skipExisting: {
+                type: 'boolean',
+                description: 'Skip charts whose version already exists in the registry.',
+                default: false,
+            },
         },
         async setup(ctx) {
             const manager = new HelmChartManager();
@@ -48,6 +53,7 @@ export function defineCLIPushCommand() {
                     host: ctx.args.host,
                     username: ctx.args.username,
                     password: ctx.args.password,
+                    skipExisting: ctx.args.skipExisting,
                 });
 
                 for (const chart of charts) {

@@ -18,6 +18,7 @@ export function normalizeHelmChartsReleaseOptions(input: HelmChartsReleaseOption
         repo: input.repo,
         branch: input.branch,
         token: input.token,
+        generateReleaseNotes: input.generateReleaseNotes ?? false,
     };
 
     /**

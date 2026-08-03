@@ -233,10 +233,17 @@ export class HelmChartManager implements IHelmChartManager {
             uploadArgs.push('--pages-branch', options.branch);
         }
 
+        // --generate-release-notes is only accepted by upload, not by index
+        const uploadOnlyArgs : string[] = [];
+        if (options.generateReleaseNotes) {
+            uploadOnlyArgs.push('--generate-release-notes');
+        }
+
         // release step
         await this.helmChartReleaserBinary.execute([
             'upload',
             '--skip-existing',
+            ...uploadOnlyArgs,
             ...uploadArgs,
         ]);
 
@@ -277,19 +284,58 @@ export class HelmChartManager implements IHelmChartManager {
         const graphFlat = topologicalSort(this.graph)
             .reverse();
 
+        const pushed : IHelmChartContainer[] = [];
+
         for (const chartPath of graphFlat) {
             const chart = this.items[chartPath];
-            if (chart) {
-                await this.helmBinary.execute([
-                    'push',
-                    `${HELM_OUTPUT_PACKAGE_DIRECTORY}/${chart.data.name}-${chart.data.version}.tgz`,
-                    `oci://${options.host}`,
-                ]);
+            if (!chart) {
+                continue;
             }
+
+            if (options.skipExisting) {
+                const exists = await this.isChartPresent(options.host, chart.data.name, chart.data.version);
+                if (exists) {
+                    continue;
+                }
+            }
+
+            await this.helmBinary.execute([
+                'push',
+                `${HELM_OUTPUT_PACKAGE_DIRECTORY}/${chart.data.name}-${chart.data.version}.tgz`,
+                `oci://${options.host}`,
+            ]);
+
+            pushed.push(chart);
         }
 
         await this.helmBinary.execute(['registry', 'logout', options.host]);
 
-        return Object.values(this.items);
+        return pushed;
+    }
+
+    /**
+     * Check if a chart version is already present in an oci registry.
+     *
+     * A failing lookup is treated as absent, so a transient error leads to a
+     * push attempt rather than to a silently skipped chart.
+     *
+     * @param host
+     * @param name
+     * @param version
+     */
+    protected async isChartPresent(host: string, name: string, version: string) : Promise<boolean> {
+        try {
+            await this.helmBinary.execute([
+                'show',
+                'chart',
+                `oci://${host}/${name}`,
+                '--version',
+                version,
+            ]);
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 }

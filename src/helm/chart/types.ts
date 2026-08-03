@@ -28,6 +28,14 @@ export type HelmChartManagerPushOptions = {
     host: string,
     username: string,
     password: string,
+
+    /**
+     * Skip charts whose name and version already exist in the registry,
+     * so re-running the push on an unchanged branch is a no-op.
+     *
+     * default: false
+     */
+    skipExisting?: boolean,
 };
 
 export type HelmChartManagerOptions = {

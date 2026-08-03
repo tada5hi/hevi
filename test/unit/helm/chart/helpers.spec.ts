@@ -67,6 +67,7 @@ describe('helm > chart > helpers > release', () => {
             repo: undefined,
             branch: 'gh-pages',
             token: undefined,
+            generateReleaseNotes: false,
         });
     });
 
@@ -81,6 +82,7 @@ describe('helm > chart > helpers > release', () => {
             repo: 'hevi',
             branch: 'pages',
             token: 'secret',
+            generateReleaseNotes: false,
         });
     });
 
@@ -93,6 +95,7 @@ describe('helm > chart > helpers > release', () => {
             repo: 'hevi',
             branch: 'gh-pages',
             token: 'from-github-token',
+            generateReleaseNotes: false,
         });
     });
 
@@ -102,6 +105,10 @@ describe('helm > chart > helpers > release', () => {
         process.env.GITHUB_REPOSITORY = 'tada5hi/hevi';
 
         expect(normalizeHelmChartsReleaseOptions().token).toEqual('from-github-token');
+    });
+
+    it('should pass through generateReleaseNotes', () => {
+        expect(normalizeHelmChartsReleaseOptions({ generateReleaseNotes: true }).generateReleaseNotes).toEqual(true);
     });
 
     it('should not override an explicit owner and repo', () => {
@@ -116,6 +123,7 @@ describe('helm > chart > helpers > release', () => {
             repo: 'chart',
             branch: 'gh-pages',
             token: 'from-github-token',
+            generateReleaseNotes: false,
         });
     });
 });

@@ -39,6 +39,11 @@ export function defineCLIReleaseCommand() {
                 type: 'string',
                 description: 'Git token',
             },
+            generateReleaseNotes: {
+                type: 'boolean',
+                description: 'Let GitHub generate the release name and body from merged pull requests.',
+                default: false,
+            },
         },
         async setup(ctx) {
             const manager = new HelmChartManager();
@@ -50,6 +55,7 @@ export function defineCLIReleaseCommand() {
                     owner: ctx.args.owner,
                     token: ctx.args.token,
                     branch: ctx.args.branch,
+                    generateReleaseNotes: ctx.args.generateReleaseNotes,
                 });
 
                 for (const chart of charts) {

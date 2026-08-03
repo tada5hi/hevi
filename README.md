@@ -123,6 +123,7 @@ npx hevi push <directory> \
 | `--host`     | string | yes      | Registry host, e.g. `ghcr.io`.     |
 | `--username` | string | yes      | Registry username.                 |
 | `--password` | string | yes      | Registry password or token.        |
+| `--skipExisting` | boolean | no  | Skip charts whose version already exists in the registry. |
 
 Run `package` first, since `push` uploads the archives from `.hevi/packages`.
 
@@ -145,6 +146,7 @@ npx hevi release <directory> \
 | `--repo`   | string | inferred   | GitHub repository name.                                           |
 | `--branch` | string | `gh-pages` | Branch the charts and `index.yaml` are published to.               |
 | `--token`  | string | inferred   | Git token.                                                        |
+| `--generateReleaseNotes` | boolean | `false` | Let GitHub generate the release name and body from merged pull requests. |
 
 Inside GitHub Actions, `--owner`, `--repo` and `--token` are read from the environment
 (see [Environment](#environment)), so they can usually be omitted. Existing releases are
@@ -186,11 +188,13 @@ versionize, package, release, push.
 | `release-owner`  | inferred       | GitHub owner.                                                      |
 | `release-repo`   | inferred       | GitHub repository name.                                            |
 | `release-branch` | `gh-pages`     | Branch the charts and `index.yaml` are published to.               |
+| `release-generate-notes` | `false` | Let GitHub generate the release name and body.               |
 | `token`          | `github.token` | Token used to interact with GitHub.                                |
 | `push`           | `false`        | Push the packaged charts to an OCI registry.                       |
 | `push-host`      | –              | Registry host, e.g. `ghcr.io`.                                     |
 | `push-username`  | –              | Registry username.                                                 |
 | `push-password`  | –              | Registry password or token.                                        |
+| `push-skip-existing` | `false`    | Skip charts whose version already exists in the registry.          |
 | `node-version`   | `24`           | Node.js version to set up. Set to an empty string to skip setup.   |
 
 The action builds hevi from its own checkout, so the ref it is pinned to is exactly the

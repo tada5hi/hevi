@@ -22,6 +22,12 @@ export class FakeBinary implements IBinary {
 
     protected output : string;
 
+    /**
+     * Predicate deciding which invocations exit non zero, mirroring how the
+     * real binary signals e.g. a chart that is absent from a registry.
+     */
+    failWhen : (args: string[]) => boolean = () => false;
+
     constructor(name = 'fake', output = '') {
         this.name = name;
         this.path = `${this.directory}/${name}`;
@@ -30,6 +36,10 @@ export class FakeBinary implements IBinary {
 
     async execute(args: string[]) : Promise<string> {
         this.calls.push(args);
+
+        if (this.failWhen(args)) {
+            throw new Error(`fake ${this.name} failed: ${args.join(' ')}`);
+        }
 
         return this.output;
     }

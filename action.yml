@@ -37,6 +37,10 @@ inputs:
         description: 'Branch the charts and index.yaml are published to.'
         required: false
         default: 'gh-pages'
+    release-generate-notes:
+        description: 'Let GitHub generate the release name and body from merged pull requests. Only relevant when chart-releaser owns the release creation.'
+        required: false
+        default: 'false'
     token:
         description: 'Token used to interact with GitHub.'
         required: false
@@ -55,6 +59,10 @@ inputs:
     push-password:
         description: 'Registry password or token.'
         required: false
+    push-skip-existing:
+        description: 'Skip charts whose version already exists in the registry.'
+        required: false
+        default: 'false'
 
     node-version:
         description: 'Node.js version to use. Set to empty string to skip setup and use the existing Node.js installation.'
@@ -110,6 +118,7 @@ runs:
               if [ -n "${{ inputs['release-owner'] }}" ]; then args="$args --owner ${{ inputs['release-owner'] }}"; fi
               if [ -n "${{ inputs['release-repo'] }}" ]; then args="$args --repo ${{ inputs['release-repo'] }}"; fi
               if [ -n "${{ inputs['release-branch'] }}" ]; then args="$args --branch ${{ inputs['release-branch'] }}"; fi
+              if [ "${{ inputs['release-generate-notes'] }}" = "true" ]; then args="$args --generateReleaseNotes"; fi
 
               node "${{ github.action_path }}/dist/cli.mjs" release "${{ inputs.directory }}" $args
 
@@ -121,7 +130,10 @@ runs:
               PUSH_USERNAME: ${{ inputs['push-username'] }}
               PUSH_PASSWORD: ${{ inputs['push-password'] }}
           run: |
+              args=""
+              if [ "${{ inputs['push-skip-existing'] }}" = "true" ]; then args="--skipExisting"; fi
+
               node "${{ github.action_path }}/dist/cli.mjs" push "${{ inputs.directory }}" \
                   --host "$PUSH_HOST" \
                   --username "$PUSH_USERNAME" \
-                  --password "$PUSH_PASSWORD"
+                  --password "$PUSH_PASSWORD" $args
