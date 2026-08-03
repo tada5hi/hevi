@@ -71,8 +71,3 @@ jobs:
             - name: Publish
               if: steps.release.outputs.releases_created == 'true'
               uses: tada5hi/monoship@v2
-              with:
-                  token: ${{ secrets.NPM_TOKEN }}
-                  # Reuse the Node.js set up by the install action, which wrote the
-                  # registry-url into .npmrc that NODE_AUTH_TOKEN is matched against.
-                  node-version: ''
