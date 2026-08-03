@@ -83,6 +83,13 @@
 * add git add command before commit ([d82cf63](https://github.com/tada5hi/hevi/commit/d82cf63f0c97fee749cd08cdaae7462f063936b0))
 * apply --follow-tags and --atomic option to git push ([0e88c6c](https://github.com/tada5hi/hevi/commit/0e88c6c9dff89c63c4a0322429b6640e617320c2))
 
+## [2.0.1](https://github.com/tada5hi/hevi/compare/v2.0.0...v2.0.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* authenticate against the bare registry when pushing ([f26a72b](https://github.com/tada5hi/hevi/commit/f26a72b418a0748047bed20dc89d96e0fd71f299))
+
 ## [2.0.0](https://github.com/tada5hi/hevi/compare/v1.7.0...v2.0.0) (2026-08-03)
 
 
