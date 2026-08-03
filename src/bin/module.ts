@@ -36,8 +36,9 @@ export abstract class Binary implements IBinary {
 
         let execPath :string | undefined;
         try {
+            // windows has no which(1)
             execPath = await executeShellCommand(
-                'which',
+                this.platform === 'win32' ? 'where' : 'which',
                 [this.name],
                 options,
             );
