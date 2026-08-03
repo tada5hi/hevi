@@ -29,6 +29,33 @@ jobs:
             - name: Checkout
               if: steps.release.outputs.releases_created == 'true'
               uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+
+            - name: Configure Git
+              if: steps.release.outputs.releases_created == 'true'
+              shell: bash
+              run: |
+                  git config user.name "$GITHUB_ACTOR"
+                  git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+            # The composite action is consumed as tada5hi/hevi@v<major>, so the
+            # major and minor tags have to be repointed at every release.
+            - name: Tag major and minor versions
+              if: steps.release.outputs.releases_created == 'true'
+              shell: bash
+              env:
+                  MAJOR: ${{ steps.release.outputs.major }}
+                  MINOR: ${{ steps.release.outputs.minor }}
+              run: |
+                  git tag -d "v$MAJOR" || true
+                  git tag -d "v$MAJOR.$MINOR" || true
+                  git push origin ":v$MAJOR" || true
+                  git push origin ":v$MAJOR.$MINOR" || true
+                  git tag -a "v$MAJOR" -m "Release v$MAJOR"
+                  git tag -a "v$MAJOR.$MINOR" -m "Release v$MAJOR.$MINOR"
+                  git push origin "v$MAJOR"
+                  git push origin "v$MAJOR.$MINOR"
 
             - name: Install
               if: steps.release.outputs.releases_created == 'true'
@@ -44,3 +71,8 @@ jobs:
             - name: Publish
               if: steps.release.outputs.releases_created == 'true'
               uses: tada5hi/monoship@v2
+              with:
+                  token: ${{ secrets.NPM_TOKEN }}
+                  # Reuse the Node.js set up by the install action, which wrote the
+                  # registry-url into .npmrc that NODE_AUTH_TOKEN is matched against.
+                  node-version: ''
