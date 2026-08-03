@@ -282,7 +282,7 @@ export class HelmChartManager implements IHelmChartManager {
             if (chart) {
                 await this.helmBinary.execute([
                     'push',
-                    `${HELM_OUTPUT_PACKAGE_DIRECTORY}/${chart.data.name}-${chart.data.version}`,
+                    `${HELM_OUTPUT_PACKAGE_DIRECTORY}/${chart.data.name}-${chart.data.version}.tgz`,
                     `oci://${options.host}`,
                 ]);
             }
