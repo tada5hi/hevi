@@ -5,7 +5,7 @@
 | Tool                        | Purpose                                                            |
 |-----------------------------|--------------------------------------------------------------------|
 | `tsdown` (rolldown)         | Bundling to ESM + `.d.mts` declarations                            |
-| `typescript`                | Typechecking only (`noEmit`) — run via `npx tsc --noEmit`          |
+| `typescript`                | Typechecking only (`noEmit`), run via `npx tsc --noEmit`          |
 | `vitest` + `@vitest/coverage-v8` | Test runner and coverage                                      |
 | `eslint` 10 + `@tada5hi/eslint-config` | Flat-config linting (`eslint.config.js`)                |
 | `husky`                     | Git hooks (`prepare: husky`)                                       |
@@ -17,8 +17,29 @@
 
 - The build does **not** typecheck. After changing types, run `npx tsc --noEmit`.
 - After making changes, **always build**, **run the tests** and **run the linter** on the result.
-- Prefer `npm run lint:fix` — the shared config is stylistic and auto-fixes most findings. It can
+- Prefer `npm run lint:fix`, since the shared config is stylistic and auto-fixes most findings. It can
   leave trailing whitespace behind when it inserts line breaks; strip it before committing.
+
+## Prose Style
+
+Applies to every Markdown file, code comment, commit message, CLI help string and
+GitHub metadata (repository description, issue and pull request text).
+
+- **Avoid the em dash (`—`).** Rewrite the sentence instead of substituting the
+  character. A comma, a colon, parentheses, `since`/`so`/`because`, or two shorter
+  sentences almost always read better:
+
+  ```
+  Bad:  Run `package` first — `push` uploads the archives from .hevi/packages.
+  Good: Run `package` first, since `push` uploads the archives from .hevi/packages.
+
+  Bad:  A different version — or a fake, in tests — can be supplied.
+  Good: A different version (or a fake, in tests) can be supplied.
+  ```
+
+  Hyphens in compound words (`dependency-first`) and ranges are unaffected; this rule
+  is about the `—` character only.
+- Prefer plain, direct wording over filler and marketing language.
 
 ## Code Style
 
@@ -45,8 +66,8 @@ export interface IHelmChartContainer { /* ... */ }
 export class HelmChartContainer implements IHelmChartContainer { /* ... */ }
 ```
 
-**Abstracting classes behind interfaces and referencing the interface is the preferred strategy** —
-it is what allows fake implementations to be plugged in. When adding a class that will be consumed
+**Abstracting classes behind interfaces and referencing the interface is the preferred strategy.**
+It is what allows fake implementations to be plugged in. When adding a class that will be consumed
 by another module, add the matching `I`-prefixed interface and type the consumer against it.
 
 Interfaces expose getters as `readonly` properties:
@@ -87,7 +108,7 @@ Extends `@tada5hi/tsconfig`, which is fully strict. Notable settings inherited o
   `noImplicitReturns`, `noImplicitOverride`, `verbatimModuleSyntax`
 - Overridden locally: `target: ES2022`, `module: ESNext`, `moduleResolution: bundler`,
   `noEmit: true`, `allowImportingTsExtensions: true`
-- Only `src/**/*` is included; test files are typechecked through the editor/vitest, not `tsc`.
+- Both `src/**/*` and `test/**/*.ts` are included, so `npm run typecheck` covers the tests too.
 
 Consequences worth knowing:
 
@@ -107,8 +128,8 @@ Consequences worth knowing:
 
 `npm run build` runs `tsdown` and produces, in `dist/`:
 
-- `index.mjs` + `index.d.mts` — the library entry
-- `cli.mjs` (executable, shebang preserved) — the `hevi` binary
+- `index.mjs` + `index.d.mts`: the library entry
+- `cli.mjs` (executable, shebang preserved): the `hevi` binary
 - a shared chunk holding code common to both entries, plus source maps
 
 Runtime dependencies are externalized automatically from `package.json`.
@@ -139,11 +160,16 @@ Version state lives in `.release-please-manifest.json`; config in `release-pleas
 
 ## CI/CD
 
-- `.github/workflows/main.yml` — CI on push/PR to `master`, `develop`, `next`, `beta`, `alpha`:
+- `.github/workflows/main.yml`: CI on push/PR to `master`, `develop`, `next`, `beta`, `alpha`:
   Install → Build → (Lint, Test) on Node 24, with concurrency cancellation.
-- `.github/workflows/release.yml` — release-please + monoship, on push to `master`.
-- `.github/actions/{install,build}` — composite actions with npm and build caching.
-- `.github/dependabot.yml` — daily npm and GitHub Actions updates targeting `master`, grouped into
+- `.github/workflows/release.yml`: release-please + monoship, on push to `master`.
+- `.github/actions/{install,build}`: composite actions with npm and build caching.
+- `action.yml`: the public composite GitHub Action. It installs the published npm package
+  (defaulting to this repo's own version via `$GITHUB_ACTION_PATH/package.json`) and shells
+  out to the CLI, so there is nothing to bundle and no second repository to keep in sync.
+  Inputs are passed to the shell through `env:` rather than `${{ }}` interpolation, so
+  secrets and paths containing quotes or spaces cannot break or inject into the command.
+- `.github/dependabot.yml`: daily npm and GitHub Actions updates targeting `master`, grouped into
   `majorProd`, `majorDev` and `minorAndPatch`.
 
 ## External Binaries
@@ -162,5 +188,5 @@ scheme and archive layout still hold, and that the subcommands/flags used in
 - Use **ESM** and modern TypeScript/JavaScript.
 - Before adding new code, study surrounding patterns, naming conventions and architectural decisions.
 - Put defaults and environment fallbacks in `normalize*` functions, not in consumers.
-- Never throw or catch bare values — normalize unknown thrown values with `extractErrorMessage()`.
+- Never throw or catch bare values. Normalize unknown thrown values with `extractErrorMessage()`.
 - Maintain consistency with existing conventions.

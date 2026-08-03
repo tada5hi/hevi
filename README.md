@@ -15,7 +15,7 @@
 
 Hevi scans a directory for `Chart.yaml` files, builds a dependency graph from their
 `file://` dependencies, and then versions, packages, releases and pushes them in the
-right order — so an umbrella chart never ships pointing at a stale subchart version.
+right order, so an umbrella chart never ships pointing at a stale subchart version.
 
 The `helm` and `cr` (helm chart-releaser) binaries are used under the hood. They are
 taken from `PATH` when available, otherwise downloaded once and cached, so nothing has
@@ -30,6 +30,7 @@ to be installed up front.
   - [push](#push)
   - [release](#release)
   - [helm / helmChartReleaser](#helm--helmchartreleaser)
+- [GitHub Action](#github-action)
 - [Recipes](#recipes)
 - [Programmatic usage](#programmatic-usage)
 - [Environment](#environment)
@@ -80,7 +81,7 @@ Build artifacts are written relative to the current working directory:
 npx hevi <command> [directory] [options]
 ```
 
-Every command takes an optional `directory` positional (default `.`) — the relative path
+Every command takes an optional `directory` positional (default `.`), the relative path
 that is scanned recursively for `Chart.{yml,yaml}`. `node_modules` is ignored.
 
 ### versionize
@@ -123,7 +124,7 @@ npx hevi push <directory> \
 | `--username` | string | yes      | Registry username.                 |
 | `--password` | string | yes      | Registry password or token.        |
 
-Run `package` first — `push` uploads the archives from `.hevi/packages`.
+Run `package` first, since `push` uploads the archives from `.hevi/packages`.
 
 ### release
 
@@ -158,6 +159,43 @@ behaviour but a command it does not wrap.
 npx hevi helm version
 npx hevi helmChartReleaser --help
 ```
+
+## GitHub Action
+
+This repository ships a composite action, so no separate action package has to be
+installed or kept in sync. Each phase is opt-in and they run in the order
+versionize, package, release, push.
+
+```yaml
+- uses: tada5hi/hevi@v2
+  with:
+      directory: charts
+      versionize: true
+      package: true
+      release: true
+```
+
+| Input            | Default          | Description                                                     |
+|------------------|------------------|-----------------------------------------------------------------|
+| `directory`      | `charts`         | Directory scanned for `Chart.{yml,yaml}` files.                  |
+| `hevi-version`   | action's version | npm version of hevi to run.                                      |
+| `versionize`     | `false`          | Bump or set the version of every chart.                          |
+| `version`        | –                | Explicit semver version. Bumps the patch version when empty.     |
+| `dry-run`        | `false`          | Run versionize without writing.                                  |
+| `package`        | `false`          | Package the charts into `.hevi/packages`.                        |
+| `release`        | `false`          | Release the packaged charts to GitHub.                           |
+| `release-owner`  | inferred         | GitHub owner.                                                    |
+| `release-repo`   | inferred         | GitHub repository name.                                          |
+| `release-branch` | `gh-pages`       | Branch the charts and `index.yaml` are published to.             |
+| `token`          | `github.token`   | Token used by `release`.                                         |
+| `push`           | `false`          | Push the packaged charts to an OCI registry.                     |
+| `push-host`      | –                | Registry host, e.g. `ghcr.io`.                                   |
+| `push-username`  | –                | Registry username.                                               |
+| `push-password`  | –                | Registry password or token.                                      |
+
+By default the action installs the hevi release that matches its own ref, so
+`tada5hi/hevi@v2` runs `hevi@2.x`. Node.js is expected on the runner, which is the case
+for all GitHub-hosted runners.
 
 ## Recipes
 
@@ -194,21 +232,33 @@ jobs:
             - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 22
 
-            - run: npx hevi versionize ./charts
-            - run: npx hevi package ./charts
-            - run: npx hevi release ./charts
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - uses: tada5hi/hevi@v2
+              with:
+                  directory: charts
+                  versionize: true
+                  package: true
+                  release: true
 ```
 
 `git config user.*` and a commit step are needed if the bumped `Chart.yaml`
 files should be written back to the branch.
 
 ### Publish to an OCI registry (GHCR)
+
+```yaml
+            - uses: tada5hi/hevi@v2
+              with:
+                  directory: charts
+                  package: true
+                  push: true
+                  push-host: ghcr.io
+                  push-username: ${{ github.actor }}
+                  push-password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The CLI can be driven directly instead, if the phases need to be interleaved with
+other steps:
 
 ```yaml
             - run: npx hevi package ./charts
@@ -229,14 +279,16 @@ control:
             - uses: azure/setup-helm@v4
               with:
                   version: v3.21.3
-            - run: npx hevi package ./charts
+            - uses: tada5hi/hevi@v2
+              with:
+                  package: true
 ```
 
 ### Exit codes
 
 Every command exits `1` when the underlying `helm` / `cr` invocation fails, so no extra
 error handling is needed to fail a pipeline step. Note that `--dryRun` only suppresses
-writes — it always exits `0` and is not a drift check.
+writes. It always exits `0` and is not a drift check.
 
 ## Programmatic usage
 
@@ -273,8 +325,8 @@ bumpVersion('1.2.3', 'minor'); // '1.3.0'
 
 ### Swapping the binaries
 
-`HelmChartManager` depends on the `IBinary` interface, so a different version — or a
-fake, in tests — can be supplied:
+`HelmChartManager` depends on the `IBinary` interface, so a different version (or a
+fake, in tests) can be supplied:
 
 ```typescript
 import { HelmBinary, HelmChartManager } from 'hevi';

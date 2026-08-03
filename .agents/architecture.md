@@ -38,7 +38,7 @@ The architecture is a small **orchestrator + containers + ports** design:
 `file://` dependencies form a directed graph (`chart -> dependency`). `topologicalSort(graph).reverse()`
 yields leaves first, so a dependency is always versioned/packaged **before** the chart that
 consumes it. After a chart is versioned, the manager walks its adjacent nodes and lifts the new
-version into the parent's `dependencies[].version` entry — this is what keeps `foo`'s dependency on
+version into the parent's `dependencies[].version` entry. This is what keeps `foo`'s dependency on
 `bar` in sync when both are bumped.
 
 ### 2. Binaries are resolved lazily, then cached on disk
@@ -149,8 +149,8 @@ Output:
 ## Error Handling
 
 - `executeShellCommand()` throws when the child process exits non-zero, using `stderr` as message.
-- `Binary.execute()` swallows failures of the `which` probe and of the `access` checks — those are
-  control flow, not errors — but propagates download and execution failures.
+- `Binary.execute()` swallows failures of the `which` probe and of the `access` checks, which are
+  control flow rather than errors, but propagates download and execution failures.
 - CLI commands catch, log via `consola` and `process.exit(1)`.
 - Thrown values are normalized with `extractErrorMessage()` (`src/utils/error.ts`), which handles
   `Error` instances, plain strings and objects carrying a string `message`, since JavaScript allows

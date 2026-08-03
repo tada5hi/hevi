@@ -5,7 +5,7 @@
 - **Runner**: [Vitest](https://vitest.dev) 4
 - **Test location**: `test/unit/**/*.{test,spec}.{js,ts}`
 - **Config**: `test/vitest.config.ts`
-- **Prerequisite**: none — no Helm installation is required; some specs do perform live HTTP `HEAD`
+- **Prerequisite**: none. No Helm installation is required, though some specs perform live HTTP `HEAD`
   requests (see *Network-dependent tests*).
 
 Vitest globals are **not** enabled. Every spec explicitly imports what it uses:
@@ -44,14 +44,14 @@ Everything under `test/unit/` mirroring the `src/` layout:
 
 ## Test Helpers & Fixtures
 
-- `test/data/charts/` — two fixture charts. `foo` depends on `bar` via `repository: file://../bar`,
+- `test/data/charts/`: two fixture charts. `foo` depends on `bar` via `repository: file://../bar`,
   which is what exercises the dependency graph and version propagation.
-- `test/utils/binary.ts` — `FakeBinary implements IBinary`, records every `execute()` call.
+- `test/utils/binary.ts`: `FakeBinary implements IBinary`, records every `execute()` call.
 
 Specs that write to disk copy the fixtures into a fresh `fs.promises.mkdtemp()` directory and remove
 it afterwards, so `test/data` is never mutated. Note that `manager-commands.spec.ts` also
 `process.chdir()`s into that directory (the `.hevi` output paths are resolved relative to
-`process.cwd()`) and restores the original cwd in `afterEach` — use
+`process.cwd()`) and restores the original cwd in `afterEach`. Use
 `fs.promises.realpath()` on the temp dir, otherwise the macOS `/var` → `/private/var` symlink makes
 relative path assertions fail.
 
@@ -62,13 +62,13 @@ dependency sits behind an interface, so a fake with real in-memory behaviour is 
 more faithful than a mock.
 
 ```typescript
-// Good — a fake implements the port and records real calls
+// Good: a fake implements the port and records real calls
 const helmBinary = new FakeBinary('helm');
 const manager = new HelmChartManager({ helmBinary });
 await manager.packageCharts();
 expect(helmBinary.callsOf('package')).toHaveLength(2);
 
-// Bad — spy stubs lack behaviour and couple the test to implementation details
+// Bad: spy stubs lack behaviour and couple the test to implementation details
 const helmBinary = { execute: vi.fn(), download: vi.fn() };
 ```
 
@@ -77,7 +77,7 @@ constructor option) over reaching for module mocking.
 
 ## Testing Philosophy
 
-Tests should assert *expected* behaviour based on the documented contract — not merely confirm what
+Tests should assert *expected* behaviour based on the documented contract, not merely confirm what
 the implementation currently does. If a test fails, it may well have surfaced a real bug: the
 `manager-commands.spec.ts` push assertions originally caught that `pushCharts()` built its package
 path without the `.tgz` suffix that `helm package` actually produces.
@@ -98,7 +98,7 @@ npm run test:coverage
 - Provider: `v8`
 - Included: `src/**/*.{ts,tsx,js,jsx}`
 - Excluded: `src/cli/**` (thin adapters), `src/utils/**` (I/O infrastructure)
-- Thresholds: **80%** for branches, functions, lines and statements — the run fails below that.
+- Thresholds: **80%** for branches, functions, lines and statements. The run fails below that.
 
 ## CI Pipeline
 

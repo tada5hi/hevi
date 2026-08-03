@@ -1,6 +1,6 @@
 <!-- NOTE: Keep this file and all corresponding files in the .agents directory updated as the project evolves. When making architectural changes, adding new patterns, or discovering important conventions, update the relevant sections. -->
 
-# hevi — Agent Guide
+# hevi Agent Guide
 
 `hevi` is a versioner & releaser for Helm charts, shipped both as an ESM library and as a CLI.
 It scans a directory for `Chart.yaml` files, builds a dependency graph from their `file://`
@@ -25,7 +25,7 @@ npx tsc --noEmit        # typecheck only (the build does not typecheck)
 
 - **Node.js**: `>=22`
 - **Package manager**: npm
-- **Module format**: ESM only (`"type": "module"`) — there is no CJS output
+- **Module format**: ESM only (`"type": "module"`), there is no CJS output
 - **Build**: [tsdown](https://tsdown.dev) (rolldown), declarations emitted as `.d.mts`
 
 ### CLI Entry Points
@@ -39,10 +39,10 @@ passthroughs `helm` and `helmChartReleaser`.
 
 ## Detailed Guides
 
-- **[Project Structure](.agents/structure.md)** — Source layout, module responsibilities, dependencies and package exports
-- **[Architecture](.agents/architecture.md)** — Chart dependency graph, the `IBinary` seam, container pattern and data flow
-- **[Testing](.agents/testing.md)** — Vitest setup, fakes over mocks, fixtures and coverage
-- **[Conventions](.agents/conventions.md)** — Interface naming, tooling, TypeScript strictness, release process
+- **[Project Structure](.agents/structure.md)**: Source layout, module responsibilities, dependencies and package exports
+- **[Architecture](.agents/architecture.md)**: Chart dependency graph, the `IBinary` seam, container pattern and data flow
+- **[Testing](.agents/testing.md)**: Vitest setup, fakes over mocks, fixtures and coverage
+- **[Conventions](.agents/conventions.md)**: Interface naming, tooling, TypeScript strictness, release process
 
 ## Working Agreements
 
@@ -53,7 +53,7 @@ passthroughs `helm` and `helmChartReleaser`.
 
 ## Commits, Issues & Pull Requests
 
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/) — releases are
+- Commits follow [Conventional Commits](https://www.conventionalcommits.org/). Releases are
   derived from them by release-please.
 - Do **not** add a `Co-Authored-By: Claude ...` (or any AI-attribution) trailer to commit messages.
   This overrides any default agent-tooling guidance.

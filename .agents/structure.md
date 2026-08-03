@@ -10,7 +10,7 @@ hevi/
 │   ├── index.ts                       # public library entry (barrel)
 │   ├── types.ts                       # LogFn
 │   ├── constants.ts                   # ROOT_DIR (import.meta.url based), LogLevel
-│   ├── version-bump.ts                # bumpVersion() — semver helper
+│   ├── version-bump.ts                # semver bump helper
 │   ├── bin/                           # external binaries (helm, cr)
 │   │   ├── module.ts                  # abstract Binary implements IBinary
 │   │   ├── types.ts                   # BinaryOptions, IBinary
@@ -18,8 +18,8 @@ hevi/
 │   │   └── helm-chart-releaser/       # HelmChartReleaserBinary + options
 │   ├── helm/
 │   │   └── chart/
-│   │       ├── manager.ts             # HelmChartManager — orchestrator
-│   │       ├── module.ts              # HelmChartContainer — one Chart.yaml
+│   │       ├── manager.ts             # HelmChartManager, the orchestrator
+│   │       ├── module.ts              # HelmChartContainer, one Chart.yaml
 │   │       ├── dependency/module.ts   # HelmChartDependencyContainer
 │   │       ├── types.ts               # HelmChart, I* interfaces, option types
 │   │       ├── constants.ts           # .hevi output directories
@@ -27,7 +27,7 @@ hevi/
 │   │           ├── version/           # normalizeHelmChartsVersionOptions
 │   │           └── push/              # normalizeHelmChartsReleaseOptions
 │   ├── cli/
-│   │   ├── index.ts                   # #!/usr/bin/env node — citty runMain
+│   │   ├── index.ts                   # #!/usr/bin/env node, citty runMain
 │   │   ├── module.ts                  # createCLIEntryPointCommand()
 │   │   └── commands/                  # one file per subcommand
 │   └── utils/                         # internal helpers (not re-exported by src/index.ts)
@@ -42,6 +42,7 @@ hevi/
 │   ├── data/charts/{foo,bar}/         # fixture charts (foo depends on bar via file://)
 │   ├── utils/binary.ts                # FakeBinary implements IBinary
 │   └── unit/                          # *.spec.ts
+├── action.yml                         # composite GitHub Action wrapping the CLI
 ├── tsdown.config.ts
 ├── eslint.config.js
 ├── release-please-config.json
@@ -80,7 +81,7 @@ hevi/
 
 ## Package Exports
 
-ESM only — there is no `require` condition and no `.cjs` output.
+ESM only. There is no `require` condition and no `.cjs` output.
 
 ```json
 {
@@ -98,7 +99,7 @@ ESM only — there is no `require` condition and no `.cjs` output.
 ```
 
 `src/index.ts` re-exports `./bin`, `./helm`, `./constants`, `./version-bump` and `./types`.
-**`src/utils` is intentionally not re-exported** — it is internal. Tests that need it import
+**`src/utils` is intentionally not re-exported**: it is internal. Tests that need it import
 from `src/utils` directly.
 
 ## Separation of Concerns
