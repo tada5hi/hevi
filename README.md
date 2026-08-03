@@ -120,7 +120,7 @@ npx hevi push <directory> \
 
 | Option       | Type   | Required | Description                        |
 |--------------|--------|----------|------------------------------------|
-| `--host`     | string | yes      | Registry host, e.g. `ghcr.io`.     |
+| `--host`     | string | yes      | Push target, e.g. `ghcr.io` or `ghcr.io/acme/charts`. Authentication uses the bare registry. |
 | `--username` | string | yes      | Registry username.                 |
 | `--password` | string | yes      | Registry password or token.        |
 | `--skipExisting` | boolean | no  | Skip charts whose version already exists in the registry. |
@@ -191,7 +191,7 @@ versionize, package, release, push.
 | `release-generate-notes` | `false` | Let GitHub generate the release name and body.               |
 | `token`          | `github.token` | Token used to interact with GitHub.                                |
 | `push`           | `false`        | Push the packaged charts to an OCI registry.                       |
-| `push-host`      | –              | Registry host, e.g. `ghcr.io`.                                     |
+| `push-host`      | –              | Push target, e.g. `ghcr.io/acme/charts`.                           |
 | `push-username`  | –              | Registry username.                                                 |
 | `push-password`  | –              | Registry password or token.                                        |
 | `push-skip-existing` | `false`    | Skip charts whose version already exists in the registry.          |

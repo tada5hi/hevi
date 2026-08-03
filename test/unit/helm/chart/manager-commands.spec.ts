@@ -218,6 +218,49 @@ describe('helm > chart > manager > commands', () => {
         expect(helmBinary.calls[helmBinary.calls.length - 1]).toEqual(['registry', 'logout', 'ghcr.io']);
     });
 
+    it('should authenticate against the bare registry when the host carries a path', async () => {
+        // helm >= 4 rejects a path in `registry login`, but the push target needs it
+        await manager.pushCharts({
+            host: 'ghcr.io/authup/helm-charts',
+            username: 'user',
+            password: 'pass',
+        });
+
+        expect(helmBinary.calls[0]).toEqual(['registry', 'logout', 'ghcr.io']);
+        expect(helmBinary.calls[1]).toEqual([
+            'registry',
+            'login',
+            'ghcr.io',
+            '--username',
+            'user',
+            '--password',
+            'pass',
+        ]);
+
+        expect(helmBinary.callsOf('push').map((args) => args[2])).toEqual([
+            'oci://ghcr.io/authup/helm-charts',
+            'oci://ghcr.io/authup/helm-charts',
+        ]);
+
+        expect(helmBinary.calls[helmBinary.calls.length - 1]).toEqual(['registry', 'logout', 'ghcr.io']);
+    });
+
+    it('should probe the full push target when the host carries a path', async () => {
+        helmBinary.failWhen = (args) => args[0] === 'show';
+
+        await manager.pushCharts({
+            host: 'ghcr.io/authup/helm-charts',
+            username: 'user',
+            password: 'pass',
+            skipExisting: true,
+        });
+
+        expect(helmBinary.callsOf('show').map((args) => args[2])).toEqual([
+            'oci://ghcr.io/authup/helm-charts/bar',
+            'oci://ghcr.io/authup/helm-charts/foo',
+        ]);
+    });
+
     it('should not probe the registry unless skipExisting is set', async () => {
         await manager.pushCharts({
             host: 'ghcr.io',

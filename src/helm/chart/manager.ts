@@ -13,6 +13,7 @@ import { HELM_OUTPUT_INDEX_DIRECTORY, HELM_OUTPUT_PACKAGE_DIRECTORY } from './co
 import type { HelmChartsReleaseOptions, HelmChartsVersionizeOptions } from './helpers';
 import { HelmChartContainer } from './module';
 import {
+    extractRegistryHost,
     normalizeHelmChartsReleaseOptions,
     normalizeHelmChartsVersionOptions,
 } from './helpers';
@@ -265,8 +266,13 @@ export class HelmChartManager implements IHelmChartManager {
      * @param options
      */
     async pushCharts(options: HelmChartManagerPushOptions) {
+        // The host may carry a path (ghcr.io/acme/charts), which is where the
+        // charts are pushed to, but helm >= 4 rejects anything other than a bare
+        // registry when authenticating.
+        const registry = extractRegistryHost(options.host);
+
         try {
-            await this.helmBinary.execute(['registry', 'logout', options.host]);
+            await this.helmBinary.execute(['registry', 'logout', registry]);
         } catch {
             // do nothing
         }
@@ -274,7 +280,7 @@ export class HelmChartManager implements IHelmChartManager {
         await this.helmBinary.execute([
             'registry',
             'login',
-            options.host,
+            registry,
             '--username',
             options.username,
             '--password',
@@ -308,7 +314,7 @@ export class HelmChartManager implements IHelmChartManager {
             pushed.push(chart);
         }
 
-        await this.helmBinary.execute(['registry', 'logout', options.host]);
+        await this.helmBinary.execute(['registry', 'logout', registry]);
 
         return pushed;
     }
