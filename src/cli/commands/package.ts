@@ -15,7 +15,7 @@ export function defineCLIPackageCommand() {
     return defineCommand({
         meta: {
             name: 'package',
-            description: 'Package helm charts to .helm-packages',
+            description: 'Package helm charts to .hevi/packages',
         },
         args: {
             directory: {

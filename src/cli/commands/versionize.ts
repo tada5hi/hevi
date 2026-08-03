@@ -25,7 +25,7 @@ export function defineCLIVersionizeCommand() {
             },
             dryRun: {
                 type: 'boolean',
-                description: 'Commit changes to the file system.',
+                description: 'Skip writing the changes to the file system.',
                 default: false,
             },
             version: {

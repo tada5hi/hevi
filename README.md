@@ -2,7 +2,7 @@
     <img src=".github/assets/logo.svg" alt="" width="96" height="96">
 </p>
 
-<h1 align="center">Hevi 🛳️</h1>
+<h1 align="center">Hevi</h1>
 
 <p align="center">Versioner &amp; Releaser for Helm Charts</p>
 
@@ -13,16 +13,27 @@
     <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&amp;logoColor=white" alt="Conventional Commits"></a>
 </p>
 
-> 🚧 **Work in Progress**
->
-> This project is currently under active development and is not yet ready for production.
+Hevi scans a directory for `Chart.yaml` files, builds a dependency graph from their
+`file://` dependencies, and then versions, packages, releases and pushes them in the
+right order — so an umbrella chart never ships pointing at a stale subchart version.
+
+The `helm` and `cr` (helm chart-releaser) binaries are used under the hood. They are
+taken from `PATH` when available, otherwise downloaded once and cached, so nothing has
+to be installed up front.
 
 **Table of Contents**
 - [Installation](#installation)
-- [Usage](#usage)
-  - [Versionize](#versionize)
-  - [Package](#package)
-  - [Push](#push)
+- [How it works](#how-it-works)
+- [CLI](#cli)
+  - [versionize](#versionize)
+  - [package](#package)
+  - [push](#push)
+  - [release](#release)
+  - [helm / helmChartReleaser](#helm--helmchartreleaser)
+- [Recipes](#recipes)
+- [Programmatic usage](#programmatic-usage)
+- [Environment](#environment)
+- [License](#license)
 
 ## Installation
 
@@ -30,48 +41,74 @@
 npm install hevi --save-dev
 ```
 
-## Usage
+Requires **Node.js >= 22**. The package is **ESM only**.
 
-### Versionize
+## How it works
 
-Set version of all helm charts in `<directory>` to `<version>`.
+Given a directory of charts where an umbrella chart depends on a local subchart:
 
-```bash
-npx hevi versionize <directory> \
-  --version <version> \
-  --dryRun
+```yaml
+# charts/foo/Chart.yaml
+name: foo
+version: 0.1.0
+dependencies:
+    -   name: bar
+        version: 0.1.0
+        repository: file://../bar
 ```
 
-#### directory (optional)
-- Type: `Positional`
-- Default: `.`
-- Description: Relative path where helm charts are located.
+`hevi versionize` bumps every chart and rewrites the dependency entry to match, in one pass:
 
-#### version (optional)
-- Type: `String`
-- Description: Semver version (x.y.z) otherwise existing version will be patched.
+```
+charts/bar   0.1.0 -> 0.1.1
+charts/foo   0.1.0 -> 0.1.1   (dependencies[bar].version -> 0.1.1)
+```
 
-#### dryRun (optional)
-- Type: `Boolean`
-- Default: `false`
-- Description: Commit/Write changes to the file system.
+Charts are always processed dependency-first (reverse topological order), which also
+determines the order in which they are packaged and pushed.
 
-### Package
+Build artifacts are written relative to the current working directory:
 
-Package all helm charts in `<directory>` to .helm-packages.
+| Path              | Content                                     |
+|-------------------|---------------------------------------------|
+| `.hevi/packages`  | Packaged `<name>-<version>.tgz` archives    |
+| `.hevi/index`     | Generated `index.yaml`                      |
+
+## CLI
+
+```bash
+npx hevi <command> [directory] [options]
+```
+
+Every command takes an optional `directory` positional (default `.`) — the relative path
+that is scanned recursively for `Chart.{yml,yaml}`. `node_modules` is ignored.
+
+### versionize
+
+Bump or set the version of every chart, propagating new versions into dependent charts.
+
+```bash
+npx hevi versionize <directory> --version <version> --dryRun
+```
+
+| Option      | Type      | Default | Description                                                      |
+|-------------|-----------|---------|------------------------------------------------------------------|
+| `directory` | positional| `.`     | Relative path where the helm charts are located.                  |
+| `--version` | string    | –       | Semver version to set. Omit to bump the patch version instead.    |
+| `--dryRun`  | boolean   | `false` | Report what would change without writing to the file system.      |
+
+### package
+
+Package every chart into `.hevi/packages`. Runs `helm dependency update` first, and
+temporarily registers any `http(s)` chart repositories the dependencies reference.
 
 ```bash
 npx hevi package <directory>
 ```
 
-#### directory (optional)
-- Type: `Positional`
-- Default: `.`
-- Description: Relative path where helm charts are located.
+### push
 
-### Push
-
-Push all charts, present in `<directory>` and packaged in .helm-packages to remote oci registry.
+Push the packaged charts to an OCI registry.
 
 ```bash
 npx hevi push <directory> \
@@ -80,19 +117,186 @@ npx hevi push <directory> \
     --password <password>
 ```
 
-#### directory (optional)
-- Type: `Positional`
-- Default: `.`
-- Description: Relative path where helm charts are located.
+| Option       | Type   | Required | Description                        |
+|--------------|--------|----------|------------------------------------|
+| `--host`     | string | yes      | Registry host, e.g. `ghcr.io`.     |
+| `--username` | string | yes      | Registry username.                 |
+| `--password` | string | yes      | Registry password or token.        |
 
-#### host
-- Type: `String`
-- Description: Registry host e.g. ghcr.io
+Run `package` first — `push` uploads the archives from `.hevi/packages`.
 
-#### username
-- Type: `String`
-- Description: Registry username
+### release
 
-#### password
-- Type: `String`
-- Description: Registry password
+Upload the packaged charts as GitHub releases and publish the repository index to a
+GitHub Pages branch, via `cr`.
+
+```bash
+npx hevi release <directory> \
+    --owner <owner> \
+    --repo <repo> \
+    --branch <branch> \
+    --token <token>
+```
+
+| Option     | Type   | Default    | Description                                                       |
+|------------|--------|------------|-------------------------------------------------------------------|
+| `--owner`  | string | inferred   | GitHub user or organization.                                      |
+| `--repo`   | string | inferred   | GitHub repository name.                                           |
+| `--branch` | string | `gh-pages` | Branch the charts and `index.yaml` are published to.               |
+| `--token`  | string | inferred   | Git token.                                                        |
+
+Inside GitHub Actions, `--owner`, `--repo` and `--token` are read from the environment
+(see [Environment](#environment)), so they can usually be omitted. Existing releases are
+skipped, making re-runs safe.
+
+### helm / helmChartReleaser
+
+Run the managed binaries directly. Useful when you want hevi's download-and-cache
+behaviour but a command it does not wrap.
+
+```bash
+npx hevi helm version
+npx hevi helmChartReleaser --help
+```
+
+## Recipes
+
+### Bump every chart and preview the result
+
+```bash
+npx hevi versionize ./charts --dryRun
+```
+
+### Pin an entire chart directory to one version
+
+Handy when charts are released together with the application they deploy.
+
+```bash
+npx hevi versionize ./charts --version 1.4.0
+```
+
+### Publish to GitHub Pages from GitHub Actions
+
+```yaml
+name: Release Charts
+
+on:
+    push:
+        branches: [master]
+
+permissions:
+    contents: write
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - run: npx hevi versionize ./charts
+            - run: npx hevi package ./charts
+            - run: npx hevi release ./charts
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+`git config user.*` and a commit step are needed if the bumped `Chart.yaml`
+files should be written back to the branch.
+
+### Publish to an OCI registry (GHCR)
+
+```yaml
+            - run: npx hevi package ./charts
+            - run: |
+                  npx hevi push ./charts \
+                      --host ghcr.io \
+                      --username ${{ github.actor }} \
+                      --password ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Pin the helm version
+
+Both binaries default to a known-good version (`helm` 4.2.3, `cr` 1.8.1) and are only
+downloaded when they are not already on `PATH`. Install a specific `helm` in CI to take
+control:
+
+```yaml
+            - uses: azure/setup-helm@v4
+              with:
+                  version: v3.21.3
+            - run: npx hevi package ./charts
+```
+
+### Exit codes
+
+Every command exits `1` when the underlying `helm` / `cr` invocation fails, so no extra
+error handling is needed to fail a pipeline step. Note that `--dryRun` only suppresses
+writes — it always exits `0` and is not a drift check.
+
+## Programmatic usage
+
+Everything the CLI does is available as a library.
+
+```typescript
+import { HelmChartManager } from 'hevi';
+
+const manager = new HelmChartManager();
+await manager.loadMany('./charts');
+
+const charts = await manager.versionizeCharts({ version: '1.4.0' });
+
+for (const chart of charts) {
+    console.log(chart.data.name, chart.data.version);
+}
+
+await manager.packageCharts();
+await manager.pushCharts({
+    host: 'ghcr.io',
+    username: 'user',
+    password: process.env.REGISTRY_TOKEN!,
+});
+```
+
+### Bumping a single version
+
+```typescript
+import { bumpVersion } from 'hevi';
+
+bumpVersion('1.2.3');          // '1.2.4'
+bumpVersion('1.2.3', 'minor'); // '1.3.0'
+```
+
+### Swapping the binaries
+
+`HelmChartManager` depends on the `IBinary` interface, so a different version — or a
+fake, in tests — can be supplied:
+
+```typescript
+import { HelmBinary, HelmChartManager } from 'hevi';
+
+const manager = new HelmChartManager({
+    helmBinary: new HelmBinary({ version: '3.21.3' }),
+});
+```
+
+## Environment
+
+A `.env` file is loaded automatically by the CLI.
+
+| Variable            | Used by   | Purpose                                                          |
+|---------------------|-----------|------------------------------------------------------------------|
+| `GITHUB_TOKEN`      | `release` | Git token; preferred over `GH_TOKEN`.                            |
+| `GH_TOKEN`          | `release` | Fallback git token.                                              |
+| `GITHUB_REPOSITORY` | `release` | Source of `owner`/`repo` when they are not passed explicitly.    |
+| `RUNNER_TOOL_CACHE` | all       | Cache directory for downloaded binaries; defaults to the temp dir.|
+
+## License
+
+Made with 💚
+
+Published under [MIT License](./LICENSE).
