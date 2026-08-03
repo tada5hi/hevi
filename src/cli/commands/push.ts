@@ -9,6 +9,7 @@ import { defineCommand } from 'citty';
 import consola from 'consola';
 import process from 'node:process';
 import { HelmChartManager } from '../../helm';
+import { extractErrorMessage } from '../../utils';
 
 export function defineCLIPushCommand() {
     return defineCommand({
@@ -55,9 +56,8 @@ export function defineCLIPushCommand() {
 
                 process.exit(0);
             } catch (e) {
-                if (e instanceof Error) {
-                    consola.error(e.message);
-                }
+                consola.error(extractErrorMessage(e));
+                process.exit(1);
             }
         },
     });

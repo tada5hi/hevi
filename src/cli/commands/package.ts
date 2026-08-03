@@ -9,6 +9,7 @@ import { defineCommand } from 'citty';
 import consola from 'consola';
 import process from 'node:process';
 import { HelmChartManager } from '../../helm';
+import { extractErrorMessage } from '../../utils';
 
 export function defineCLIPackageCommand() {
     return defineCommand({
@@ -35,9 +36,8 @@ export function defineCLIPackageCommand() {
 
                 process.exit(0);
             } catch (e) {
-                if (e instanceof Error) {
-                    consola.error(e.message);
-                }
+                consola.error(extractErrorMessage(e));
+                process.exit(1);
             }
         },
     });

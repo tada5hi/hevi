@@ -9,6 +9,7 @@ import { defineCommand } from 'citty';
 import consola from 'consola';
 import process from 'node:process';
 import { HelmChartManager } from '../../helm';
+import { extractErrorMessage } from '../../utils';
 
 export function defineCLIVersionizeCommand() {
     return defineCommand({
@@ -51,11 +52,7 @@ export function defineCLIVersionizeCommand() {
 
                 process.exit(0);
             } catch (e) {
-                consola.warn(
-                    e instanceof Error ?
-                        e.message :
-                        'An unknown error occurred.',
-                );
+                consola.warn(extractErrorMessage(e));
                 process.exit(1);
             }
         },
