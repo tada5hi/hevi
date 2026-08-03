@@ -83,6 +83,31 @@
 * add git add command before commit ([d82cf63](https://github.com/tada5hi/hevi/commit/d82cf63f0c97fee749cd08cdaae7462f063936b0))
 * apply --follow-tags and --atomic option to git push ([0e88c6c](https://github.com/tada5hi/hevi/commit/0e88c6c9dff89c63c4a0322429b6640e617320c2))
 
+## [2.0.0](https://github.com/tada5hi/hevi/compare/v1.7.0...v2.0.0) (2026-08-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* the package is now esm-only. The commonjs build and the `hevi-esm` bin alias are gone, `hevi` points at dist/cli.mjs, and node >=22 is required.
+
+### Features
+
+* add generateReleaseNotes and skipExisting to release and push ([9af9fdf](https://github.com/tada5hi/hevi/commit/9af9fdf05cfdc7e303fde3214176208c0017f6dd))
+* default to helm 4.2.3 and chart-releaser 1.8.1 ([c3f1e67](https://github.com/tada5hi/hevi/commit/c3f1e6733c371e8c84a1fbd9e104a2e3467c3ecf))
+* ship a composite github action ([7d1c893](https://github.com/tada5hi/hevi/commit/7d1c8937a44de2476d48eef65bc888c5541f3ed9))
+
+
+### Bug Fixes
+
+* append the .tgz suffix to the pushed chart package path ([7d0ac7f](https://github.com/tada5hi/hevi/commit/7d0ac7f50b4be0bced085d8a421108a4f4f1ce29))
+* exit non-zero and normalize thrown values in the cli ([21e2638](https://github.com/tada5hi/hevi/commit/21e2638b1218476332a63c6dd2a880a15771f92b))
+* resolve binaries with where(1) on windows ([7dae4e4](https://github.com/tada5hi/hevi/commit/7dae4e46405327a1197a428470d835f1276290da))
+
+
+### Build System
+
+* migrate to an esm-only toolchain ([d62c667](https://github.com/tada5hi/hevi/commit/d62c667762bec3b8a687a10801f3d0a8f1330cb5))
+
 ## [1.1.2](https://github.com/tada5hi/hevi/compare/v1.1.1...v1.1.2) (2025-03-13)
 
 
