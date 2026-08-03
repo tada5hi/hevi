@@ -7,7 +7,10 @@
 
 import type { ReleaseType } from 'semver';
 import {
-    inc, major, minor, patch,
+    inc,
+    major,
+    minor,
+    patch,
 } from 'semver';
 
 export function bumpVersion(version: string, level?: ReleaseType) {

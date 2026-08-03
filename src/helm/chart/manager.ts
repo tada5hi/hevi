@@ -6,7 +6,7 @@
  */
 
 import { Graph, topologicalSort } from 'graph-data-structure';
-import { buildFilePath, load, locateMany } from 'locter';
+import { buildFilePath, locateMany, read } from 'locter';
 import fs from 'node:fs';
 import path from 'node:path';
 import { HELM_OUTPUT_INDEX_DIRECTORY, HELM_OUTPUT_PACKAGE_DIRECTORY } from './constants';
@@ -50,18 +50,16 @@ export class HelmChartManager {
             file :
             path.join(process.cwd(), file);
 
-        const data = await load(filePath);
-        const container = new HelmChartContainer(data, {
-            path: filePath,
-        });
+        const data = await read(filePath);
+        const container = new HelmChartContainer(data, { path: filePath });
 
         if (!this.items[container.directoryPath]) {
             this.items[container.directoryPath] = container;
 
             this.graph.addNode(container.directoryPath);
 
-            for (let i = 0; i < container.dependencies.length; i++) {
-                const dependencyRepositoryPath = container.dependencies[i].repositoryFilePath;
+            for (const dependency of container.dependencies) {
+                const dependencyRepositoryPath = dependency.repositoryFilePath;
                 if (dependencyRepositoryPath) {
                     this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
                 }
@@ -81,12 +79,11 @@ export class HelmChartManager {
         const locations = await locateMany('**/Chart.{yml,yaml}', {
             ignore: ['node_modules/**'],
             onlyFiles: true,
-            path: directory,
+            cwd: directory,
         });
 
-        const locationPaths = locations.map((location) => buildFilePath(location));
-        const loadPromises = locationPaths.map(
-            ((location) => this.load(location)),
+        const loadPromises = locations.map(
+            (location) => this.load(buildFilePath(location)),
         );
 
         await Promise.all(loadPromises);
@@ -103,8 +100,8 @@ export class HelmChartManager {
         const graphFlat = topologicalSort(this.graph)
             .reverse();
 
-        for (let i = 0; i < graphFlat.length; i++) {
-            const chart = this.items[graphFlat[i]];
+        for (const chartPath of graphFlat) {
+            const chart = this.items[chartPath];
             if (!chart) {
                 continue;
             }
@@ -115,14 +112,14 @@ export class HelmChartManager {
                 chart.bumpVersion();
             }
 
-            const adjacentPaths = this.graph.adjacent(graphFlat[i]);
+            const adjacentPaths = this.graph.adjacent(chartPath);
             if (adjacentPaths) {
                 adjacentPaths.forEach((adjacentPath) => {
                     const adjacentChart = this.items[adjacentPath];
                     if (adjacentChart) {
-                        for (let j = 0; j < chart.dependencies.length; j++) {
-                            if (chart.dependencies[j].repositoryFilePath === adjacentChart.directoryPath) {
-                                chart.dependencies[j].data.version = adjacentChart.data.version;
+                        for (const dependency of chart.dependencies) {
+                            if (dependency.repositoryFilePath === adjacentChart.directoryPath) {
+                                dependency.data.version = adjacentChart.data.version;
                             }
                         }
                     }
@@ -152,14 +149,14 @@ export class HelmChartManager {
 
         const repositories : Record<string, string> = {};
 
-        for (let i = 0; i < graphFlat.length; i++) {
-            const chart = this.items[graphFlat[i]];
+        for (const chartPath of graphFlat) {
+            const chart = this.items[chartPath];
             if (!chart) {
                 continue;
             }
 
-            for (let j = 0; j < chart.dependencies.length; j++) {
-                const { repositoryWebURL } = chart.dependencies[j];
+            for (const dependency of chart.dependencies) {
+                const { repositoryWebURL } = dependency;
                 if (repositoryWebURL) {
                     const webURL = new URL(repositoryWebURL);
                     const webURLKey = `hevi:${webURL.hostname}${webURL.pathname.replaceAll('/', '.')}`;
@@ -191,12 +188,11 @@ export class HelmChartManager {
             ]);
         }
 
-        const repositoryKeys = Object.keys(repositories);
-        for (let i = 0; i < repositoryKeys.length; i++) {
+        for (const repositoryKey of Object.keys(repositories)) {
             await this.helmBinary.execute([
                 'repo',
                 'remove',
-                repositoryKeys[i],
+                repositoryKey,
             ]);
         }
 
@@ -258,7 +254,7 @@ export class HelmChartManager {
     async pushCharts(options: HelmChartManagerPushOptions) {
         try {
             await this.helmBinary.execute(['registry', 'logout', options.host]);
-        } catch (e) {
+        } catch {
             // do nothing
         }
 
@@ -275,8 +271,8 @@ export class HelmChartManager {
         const graphFlat = topologicalSort(this.graph)
             .reverse();
 
-        for (let i = 0; i < graphFlat.length; i++) {
-            const chart = this.items[graphFlat[i]];
+        for (const chartPath of graphFlat) {
+            const chart = this.items[chartPath];
             if (chart) {
                 await this.helmBinary.execute([
                     'push',

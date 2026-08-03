@@ -7,3 +7,5 @@
 
 export * from './helm';
 export * from './helm-chart-releaser';
+export * from './module';
+export * from './types';

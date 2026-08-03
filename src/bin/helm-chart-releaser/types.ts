@@ -5,24 +5,13 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-export type HelmChartReleaserOptions = {
+import type { BinaryOptions } from '../types';
+
+export type HelmChartReleaserOptions = BinaryOptions & {
     /**
      * helm releaser version
      *
      * default: 1.7.0
      */
-    version?: string,
-    /**
-     * Machine arch (x64, ...)
-     */
-    arch?: string,
-    /**
-     * Machine platform (win32, linux, ...)
-     */
-    platform?: string,
-
-    /**
-     * output directory
-     */
-    cwd?: string
+    version?: string
 };

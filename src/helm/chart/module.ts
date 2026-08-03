@@ -37,8 +37,8 @@ export class HelmChartContainer {
         this.dependencies = [];
 
         if (data.dependencies) {
-            for (let i = 0; i < data.dependencies.length; i++) {
-                const dependencyContainer = new HelmChartDependencyContainer(data.dependencies[i], this);
+            for (const dependency of data.dependencies) {
+                const dependencyContainer = new HelmChartDependencyContainer(dependency, this);
                 this.dependencies.push(dependencyContainer);
             }
         }

@@ -6,8 +6,10 @@
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
 import type { Options } from 'tinyexec';
 import { executeShellCommand } from '../utils';
+import type { BinaryOptions } from './types';
 
 export abstract class Binary {
     protected version: string;
@@ -17,6 +19,15 @@ export abstract class Binary {
     protected platform: string;
 
     protected cwd : string;
+
+    // ---------------------------------------------------------------------------
+
+    protected constructor(options: BinaryOptions, versionDefault: string) {
+        this.version = options.version || versionDefault;
+        this.platform = options.platform || os.platform();
+        this.arch = options.arch || os.arch();
+        this.cwd = options.cwd || process.cwd();
+    }
 
     // ---------------------------------------------------------------------------
 
@@ -30,8 +41,8 @@ export abstract class Binary {
                 [this.name],
                 options,
             );
-        } catch (e) {
-            // todo: do nothing
+        } catch {
+            // the binary is not available in PATH and has to be downloaded
         }
 
         if (execPath) {
@@ -40,13 +51,13 @@ export abstract class Binary {
 
         try {
             await fs.promises.access(this.path, fs.constants.F_OK);
-        } catch (e) {
+        } catch {
             await this.download();
         }
 
         try {
             await fs.promises.access(this.path, fs.constants.X_OK);
-        } catch (e) {
+        } catch {
             await fs.promises.chmod(this.path, 0o755);
         }
 

@@ -7,7 +7,6 @@
 
 import { defineCommand } from 'citty';
 import consola from 'consola';
-import { isObject } from 'locter';
 import process from 'node:process';
 import { HelmChartManager } from '../../helm';
 
@@ -43,18 +42,20 @@ export function defineCLIVersionizeCommand() {
                     dryRun: ctx.args.dryRun,
                 });
 
-                for (let i = 0; i < charts.length; i++) {
+                for (const chart of charts) {
                     consola.success(
-                        `versionized chart ${charts[i].data.name} (${charts[i].directoryPathRelativePosix})`,
-                        { version: charts[i].data.version, appVersion: charts[i].data.appVersion },
+                        `versionized chart ${chart.data.name} (${chart.directoryPathRelativePosix})`,
+                        { version: chart.data.version, appVersion: chart.data.appVersion },
                     );
                 }
 
                 process.exit(0);
             } catch (e) {
-                if (isObject(e)) {
-                    consola.warn(e?.message || 'An unknown error occurred.');
-                }
+                consola.warn(
+                    e instanceof Error ?
+                        e.message :
+                        'An unknown error occurred.',
+                );
                 process.exit(1);
             }
         },

@@ -49,8 +49,8 @@ export function defineCLIPushCommand() {
                     password: ctx.args.password,
                 });
 
-                for (let i = 0; i < charts.length; i++) {
-                    consola.success(`pushed chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
+                for (const chart of charts) {
+                    consola.success(`pushed chart ${chart.data.name} (${chart.pathRelativePosix})`);
                 }
 
                 process.exit(0);

@@ -16,12 +16,7 @@ export class HelmChartReleaserBinary extends Binary {
     // ---------------------------------------------------------------------------
 
     constructor(options: HelmChartReleaserOptions = {}) {
-        super();
-
-        this.version = options.version || '1.7.0';
-        this.platform = options.platform || os.platform();
-        this.arch = options.arch || os.arch();
-        this.cwd = options.cwd || process.cwd();
+        super(options, '1.7.0');
     }
 
     // ---------------------------------------------------------------------------
@@ -43,7 +38,7 @@ export class HelmChartReleaserBinary extends Binary {
 
         try {
             await fs.promises.access(this.path, fs.constants.F_OK);
-        } catch (e) {
+        } catch {
             throw new Error(`The downloaded binary directory does not contain a ${this.name} file.`);
         }
     }

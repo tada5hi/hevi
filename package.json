@@ -1,6 +1,7 @@
 {
     "name": "hevi",
     "version": "1.7.0",
+    "type": "module",
     "description": "A library to set & bump versions in helm charts",
     "author": {
         "name": "Peter Placzek",
@@ -11,79 +12,65 @@
         "type": "git",
         "url": "https://github.com/tada5hi/hevi.git"
     },
-    "main": "dist/index.cjs",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.ts",
+    "main": "dist/index.mjs",
+    "types": "dist/index.d.mts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.cjs"
+            "types": "./dist/index.d.mts",
+            "import": "./dist/index.mjs"
         }
     },
     "files": [
-        "bin",
         "dist"
     ],
     "engines": {
-        "node": ">=20.0.0"
+        "node": ">=22.0.0"
     },
     "scripts": {
-        "build:types": "tsc --emitDeclarationOnly",
-        "build:js": "rollup -c",
-        "build": "rimraf dist && rimraf bin && npm run build:types && npm run build:js",
-        "build:watch": "npm run build -- --watch",
-        "commit": "npx git-cz",
-        "test": "jest --config ./test/jest.config.js",
-        "test:coverage": "cross-env NODE_ENV=test jest --config ./test/jest.config.js --coverage",
-        "lint": "eslint --ext .js,.vue,.ts ./src",
+        "build": "tsdown",
+        "typecheck": "tsc --noEmit",
+        "test": "vitest --config test/vitest.config.ts --run",
+        "test:coverage": "vitest --config test/vitest.config.ts --run --coverage",
+        "lint": "eslint",
         "lint:fix": "npm run lint -- --fix",
-        "prepare": "husky install",
-        "dev": "ts-node src/cli/index.ts",
-        "start": "node dist/cli.cjs"
+        "prepare": "husky"
     },
     "keywords": [],
     "bin": {
-        "hevi": "dist/cli.cjs",
-        "hevi-esm": "dist/cli.mjs"
+        "hevi": "dist/cli.mjs"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "license": "MIT",
     "dependencies": {
-        "@actions/github": "^6.0.0",
-        "@types/yauzl": "^2.10.3",
-        "citty": "^0.1.6",
+        "@actions/github": "^9.1.1",
+        "citty": "^0.2.2",
         "consola": "^3.4.2",
-        "dotenv": "^16.4.7",
+        "dotenv": "^17.4.2",
         "graph-data-structure": "^4.5.0",
-        "hapic": "^2.5.2",
-        "locter": "^2.1.6",
-        "semver": "^7.7.1",
-        "tar": "^7.4.3",
-        "tinyexec": "^0.3.2",
-        "yaml": "^2.7.0",
-        "yauzl": "^3.2.0"
+        "hapic": "^3.0.1",
+        "locter": "^4.1.0",
+        "semver": "^7.8.5",
+        "tar": "^7.5.22",
+        "tinyexec": "^1.3.0",
+        "yaml": "^2.9.0",
+        "yauzl": "^3.4.0"
     },
     "devDependencies": {
-        "@rollup/plugin-node-resolve": "^16.0.1",
-        "@rollup/plugin-swc": "^0.4.0",
-        "@swc/core": "^1.11.11",
-        "@swc/jest": "^0.2.37",
-        "@tada5hi/commitlint-config": "^1.2.4",
-        "@tada5hi/eslint-config-typescript": "^1.2.15",
-        "@tada5hi/semantic-release": "^0.3.2",
-        "@tada5hi/tsconfig": "^0.6.0",
-        "@types/cross-spawn": "^6.0.6",
-        "@types/jest": "^30.0.0",
-        "@types/node": "^24.5.2",
-        "@types/semver": "^7.5.8",
-        "cross-env": "^10.0.0",
-        "eslint": "^8.54.0",
+        "@tada5hi/commitlint-config": "^1.3.1",
+        "@tada5hi/eslint-config": "^2.3.1",
+        "@tada5hi/tsconfig": "^0.7.2",
+        "@types/node": "^26.1.2",
+        "@types/semver": "^7.8.0",
+        "@types/yauzl": "^3.4.0",
+        "@vitest/coverage-v8": "^4.1.10",
+        "eslint": "^10.8.0",
         "husky": "^9.1.7",
-        "jest": "^30.1.3",
-        "rollup": "^4.36.0",
-        "semantic-release": "^24.2.3",
-        "ts-node": "^10.9.2",
-        "typescript": "^5.8.2"
+        "tsdown": "^0.22.14",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.65.0",
+        "vitest": "^4.1.10"
     }
 }

@@ -5,6 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import {
+    beforeAll,
+    describe,
+    expect,
+    it,
+} from 'vitest';
 import { HelmChartManager } from '../../../../src';
 
 describe('helm', () => {
@@ -16,9 +22,7 @@ describe('helm', () => {
     });
 
     it('should bump version', async () => {
-        const charts = await manager.versionizeCharts({
-            dryRun: true,
-        });
+        const charts = await manager.versionizeCharts({ dryRun: true });
 
         expect(charts.length).toEqual(2);
 
@@ -30,8 +34,8 @@ describe('helm', () => {
         expect(foo?.data.version).toEqual('0.1.1');
 
         expect(foo?.data?.dependencies).toBeDefined();
-        expect(foo?.data?.dependencies?.[0].name).toEqual('bar');
-        expect(foo?.data?.dependencies?.[0].version).toEqual('0.1.1');
+        expect(foo?.data?.dependencies?.[0]?.name).toEqual('bar');
+        expect(foo?.data?.dependencies?.[0]?.version).toEqual('0.1.1');
 
         const bar = charts.find(
             (chart) => chart.data.name === 'bar',
@@ -56,8 +60,8 @@ describe('helm', () => {
         expect(foo?.data.version).toEqual('2.0.0');
 
         expect(foo?.data?.dependencies).toBeDefined();
-        expect(foo?.data?.dependencies?.[0].name).toEqual('bar');
-        expect(foo?.data?.dependencies?.[0].version).toEqual('2.0.0');
+        expect(foo?.data?.dependencies?.[0]?.name).toEqual('bar');
+        expect(foo?.data?.dependencies?.[0]?.version).toEqual('2.0.0');
 
         const bar = charts.find(
             (chart) => chart.data.name === 'bar',

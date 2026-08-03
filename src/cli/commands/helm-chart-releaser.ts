@@ -10,9 +10,7 @@ import { HelmChartReleaserBinary } from '../../bin';
 
 export function defineCLIHelmChartReleaserCommand() {
     return defineCommand({
-        meta: {
-            name: 'helm-chart-releaser',
-        },
+        meta: { name: 'helm-chart-releaser' },
         args: {
             command: {
                 type: 'positional',

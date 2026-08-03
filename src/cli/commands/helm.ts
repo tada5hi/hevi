@@ -10,9 +10,7 @@ import { HelmBinary } from '../../bin';
 
 export function defineCLIHelmCommand() {
     return defineCommand({
-        meta: {
-            name: 'helm',
-        },
+        meta: { name: 'helm' },
         args: {
             command: {
                 type: 'positional',

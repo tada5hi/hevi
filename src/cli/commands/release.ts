@@ -51,8 +51,8 @@ export function defineCLIReleaseCommand() {
                     branch: ctx.args.branch,
                 });
 
-                for (let i = 0; i < charts.length; i++) {
-                    consola.success(`released chart ${charts[i].data.name} (${charts[i].pathRelativePosix})`);
+                for (const chart of charts) {
+                    consola.success(`released chart ${chart.data.name} (${chart.pathRelativePosix})`);
                 }
 
                 process.exit(0);

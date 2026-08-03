@@ -13,6 +13,7 @@ import { createCLIEntryPointCommand } from './module';
 
 dotenv.config({
     debug: false,
+    quiet: true,
 });
 
 Promise.resolve()
