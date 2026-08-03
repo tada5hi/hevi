@@ -9,9 +9,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import type { Options } from 'tinyexec';
 import { executeShellCommand } from '../utils';
-import type { BinaryOptions } from './types';
+import type { BinaryOptions, IBinary } from './types';
 
-export abstract class Binary {
+export abstract class Binary implements IBinary {
     protected version: string;
 
     protected arch : string;

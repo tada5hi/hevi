@@ -16,28 +16,34 @@ import {
     normalizeHelmChartsReleaseOptions,
     normalizeHelmChartsVersionOptions,
 } from './helpers';
+import type { IBinary } from '../../bin';
 import {
     HelmBinary,
     HelmChartReleaserBinary,
 } from '../../bin';
-import type { HelmChartManagerPushOptions } from './types';
+import type {
+    HelmChartManagerOptions,
+    HelmChartManagerPushOptions,
+    IHelmChartContainer,
+    IHelmChartManager,
+} from './types';
 
-export class HelmChartManager {
+export class HelmChartManager implements IHelmChartManager {
     protected graph : Graph<string>;
 
-    protected items: Record<string, HelmChartContainer>;
+    protected items: Record<string, IHelmChartContainer>;
 
-    protected helmBinary : HelmBinary;
+    protected helmBinary : IBinary;
 
-    protected helmChartReleaserBinary : HelmChartReleaserBinary;
+    protected helmChartReleaserBinary : IBinary;
 
-    constructor() {
+    constructor(options: HelmChartManagerOptions = {}) {
         this.graph = new Graph();
 
         this.items = {};
 
-        this.helmBinary = new HelmBinary();
-        this.helmChartReleaserBinary = new HelmChartReleaserBinary();
+        this.helmBinary = options.helmBinary || new HelmBinary();
+        this.helmChartReleaserBinary = options.helmChartReleaserBinary || new HelmChartReleaserBinary();
     }
 
     /**
@@ -137,7 +143,7 @@ export class HelmChartManager {
     /**
      * Package all scanned helm charts.
      */
-    async packageCharts() : Promise<HelmChartContainer[]> {
+    async packageCharts() : Promise<IHelmChartContainer[]> {
         await fs.promises.rm(HELM_OUTPUT_INDEX_DIRECTORY, { recursive: true, force: true });
         await fs.promises.rm(HELM_OUTPUT_PACKAGE_DIRECTORY, { recursive: true, force: true });
 
@@ -203,7 +209,7 @@ export class HelmChartManager {
      * Release all scanned helm charts to GitHub
      * @param input
      */
-    async releaseCharts(input: HelmChartsReleaseOptions) : Promise<HelmChartContainer[]> {
+    async releaseCharts(input: HelmChartsReleaseOptions) : Promise<IHelmChartContainer[]> {
         const options = normalizeHelmChartsReleaseOptions(input);
 
         const uploadArgs : string[] = [

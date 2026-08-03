@@ -10,16 +10,20 @@ import path from 'node:path';
 import { stringify } from 'yaml';
 import { bumpVersion } from '../../version-bump';
 import { HelmChartDependencyContainer } from './dependency';
-import type { HelmChart } from './types';
+import type {
+    HelmChart,
+    IHelmChartContainer,
+    IHelmChartDependencyContainer,
+} from './types';
 
 type HelmChartContainerOptions = {
     path?: string
 };
 
-export class HelmChartContainer {
+export class HelmChartContainer implements IHelmChartContainer {
     data: HelmChart;
 
-    dependencies : HelmChartDependencyContainer[];
+    dependencies : IHelmChartDependencyContainer[];
 
     path : string;
 

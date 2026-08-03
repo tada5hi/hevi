@@ -6,17 +6,20 @@
  */
 
 import path from 'node:path';
-import type { HelmChartContainer } from '../module';
-import type { HelmChartDependency } from '../types';
+import type {
+    HelmChartDependency,
+    IHelmChartContainer,
+    IHelmChartDependencyContainer,
+} from '../types';
 
-export class HelmChartDependencyContainer {
-    parent : HelmChartContainer;
+export class HelmChartDependencyContainer implements IHelmChartDependencyContainer {
+    parent : IHelmChartContainer;
 
     data: HelmChartDependency;
 
     constructor(
         data: HelmChartDependency,
-        parent: HelmChartContainer,
+        parent: IHelmChartContainer,
     ) {
         this.data = data;
         this.parent = parent;
