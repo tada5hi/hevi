@@ -11,7 +11,7 @@ export type HelmChartReleaserOptions = BinaryOptions & {
     /**
      * helm releaser version
      *
-     * default: 1.7.0
+     * default: 1.8.1
      */
     version?: string
 };

@@ -16,7 +16,7 @@ export class HelmChartReleaserBinary extends Binary {
     // ---------------------------------------------------------------------------
 
     constructor(options: HelmChartReleaserOptions = {}) {
-        super(options, '1.7.0');
+        super(options, '1.8.1');
     }
 
     // ---------------------------------------------------------------------------

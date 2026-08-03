@@ -11,7 +11,7 @@ export type HelmBinOptions = BinaryOptions & {
     /**
      * helm version
      *
-     * default: 3.17.2
+     * default: 4.2.3
      */
     version?: string
 };

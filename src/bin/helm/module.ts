@@ -16,7 +16,7 @@ export class HelmBinary extends Binary {
     // ---------------------------------------------------------------------------
 
     constructor(options: HelmBinOptions = {}) {
-        super(options, '3.17.2');
+        super(options, '4.2.3');
     }
 
     // ---------------------------------------------------------------------------
