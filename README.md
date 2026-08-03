@@ -175,27 +175,26 @@ versionize, package, release, push.
       release: true
 ```
 
-| Input            | Default          | Description                                                     |
-|------------------|------------------|-----------------------------------------------------------------|
-| `directory`      | `charts`         | Directory scanned for `Chart.{yml,yaml}` files.                  |
-| `hevi-version`   | action's version | npm version of hevi to run.                                      |
-| `versionize`     | `false`          | Bump or set the version of every chart.                          |
-| `version`        | –                | Explicit semver version. Bumps the patch version when empty.     |
-| `dry-run`        | `false`          | Run versionize without writing.                                  |
-| `package`        | `false`          | Package the charts into `.hevi/packages`.                        |
-| `release`        | `false`          | Release the packaged charts to GitHub.                           |
-| `release-owner`  | inferred         | GitHub owner.                                                    |
-| `release-repo`   | inferred         | GitHub repository name.                                          |
-| `release-branch` | `gh-pages`       | Branch the charts and `index.yaml` are published to.             |
-| `token`          | `github.token`   | Token used by `release`.                                         |
-| `push`           | `false`          | Push the packaged charts to an OCI registry.                     |
-| `push-host`      | –                | Registry host, e.g. `ghcr.io`.                                   |
-| `push-username`  | –                | Registry username.                                               |
-| `push-password`  | –                | Registry password or token.                                      |
+| Input            | Default        | Description                                                       |
+|------------------|----------------|-------------------------------------------------------------------|
+| `directory`      | `charts`       | Directory scanned for `Chart.{yml,yaml}` files.                    |
+| `versionize`     | `false`        | Bump or set the version of every chart.                            |
+| `version`        | –              | Explicit semver version. Bumps the patch version when empty.       |
+| `dry-run`        | `false`        | Run versionize without writing.                                    |
+| `package`        | `false`        | Package the charts into `.hevi/packages`.                          |
+| `release`        | `false`        | Release the packaged charts to GitHub.                             |
+| `release-owner`  | inferred       | GitHub owner.                                                      |
+| `release-repo`   | inferred       | GitHub repository name.                                            |
+| `release-branch` | `gh-pages`     | Branch the charts and `index.yaml` are published to.               |
+| `token`          | `github.token` | Token used to interact with GitHub.                                |
+| `push`           | `false`        | Push the packaged charts to an OCI registry.                       |
+| `push-host`      | –              | Registry host, e.g. `ghcr.io`.                                     |
+| `push-username`  | –              | Registry username.                                                 |
+| `push-password`  | –              | Registry password or token.                                        |
+| `node-version`   | `24`           | Node.js version to set up. Set to an empty string to skip setup.   |
 
-By default the action installs the hevi release that matches its own ref, so
-`tada5hi/hevi@v2` runs `hevi@2.x`. Node.js is expected on the runner, which is the case
-for all GitHub-hosted runners.
+The action builds hevi from its own checkout, so the ref it is pinned to is exactly the
+code that runs and no npm release is required.
 
 ## Recipes
 

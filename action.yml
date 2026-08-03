@@ -1,137 +1,127 @@
 name: 'hevi'
-description: 'Version, package, push and release Helm charts'
-author: 'tada5hi'
+description: 'Version, package, push and release Helm charts.'
+inputs:
+    directory:
+        description: 'Directory that is scanned recursively for Chart.{yml,yaml} files.'
+        required: false
+        default: 'charts'
+
+    versionize:
+        description: 'Bump or set the version of every chart.'
+        required: false
+        default: 'false'
+    version:
+        description: 'Explicit semver version to set. Bumps the patch version when empty.'
+        required: false
+    dry-run:
+        description: 'Run versionize without writing the changes to the file system.'
+        required: false
+        default: 'false'
+
+    package:
+        description: 'Package the charts into .hevi/packages.'
+        required: false
+        default: 'false'
+
+    release:
+        description: 'Release the packaged charts to GitHub.'
+        required: false
+        default: 'false'
+    release-owner:
+        description: 'GitHub owner. Inferred from the workflow context when empty.'
+        required: false
+    release-repo:
+        description: 'GitHub repository name. Inferred from the workflow context when empty.'
+        required: false
+    release-branch:
+        description: 'Branch the charts and index.yaml are published to.'
+        required: false
+        default: 'gh-pages'
+    token:
+        description: 'Token used to interact with GitHub.'
+        required: false
+        default: ${{ github.token }}
+
+    push:
+        description: 'Push the packaged charts to an OCI registry.'
+        required: false
+        default: 'false'
+    push-host:
+        description: 'Registry host, e.g. ghcr.io.'
+        required: false
+    push-username:
+        description: 'Registry username.'
+        required: false
+    push-password:
+        description: 'Registry password or token.'
+        required: false
+
+    node-version:
+        description: 'Node.js version to use. Set to empty string to skip setup and use the existing Node.js installation.'
+        required: false
+        default: '24'
 
 branding:
     icon: 'anchor'
     color: 'blue'
 
-inputs:
-    directory:
-        description: 'Directory that is scanned recursively for Chart.{yml,yaml} files'
-        default: 'charts'
-    hevi-version:
-        description: 'Version of the hevi npm package to run. Defaults to the version this action ships with.'
-        default: ''
-
-    versionize:
-        description: 'Bump or set the version of every chart'
-        default: 'false'
-    version:
-        description: 'Explicit semver version for versionize. Bumps the patch version when empty.'
-        default: ''
-    dry-run:
-        description: 'Run versionize without writing to the file system'
-        default: 'false'
-
-    package:
-        description: 'Package the charts into .hevi/packages'
-        default: 'false'
-
-    release:
-        description: 'Release the packaged charts to GitHub'
-        default: 'false'
-    release-owner:
-        description: 'GitHub owner. Inferred from the workflow context when empty.'
-        default: ''
-    release-repo:
-        description: 'GitHub repository name. Inferred from the workflow context when empty.'
-        default: ''
-    release-branch:
-        description: 'Branch the charts and index.yaml are published to'
-        default: 'gh-pages'
-    token:
-        description: 'Token used by release'
-        default: ${{ github.token }}
-
-    push:
-        description: 'Push the packaged charts to an OCI registry'
-        default: 'false'
-    push-host:
-        description: 'Registry host, e.g. ghcr.io'
-        default: ''
-    push-username:
-        description: 'Registry username'
-        default: ''
-    push-password:
-        description: 'Registry password or token'
-        default: ''
-
 runs:
     using: 'composite'
     steps:
-        -   name: Install hevi
-            shell: bash
-            env:
-                INPUT_HEVI_VERSION: ${{ inputs.hevi-version }}
-            run: |
-                VERSION="$INPUT_HEVI_VERSION"
-                if [ -z "$VERSION" ]; then
-                    VERSION="$(node -p "require('$GITHUB_ACTION_PATH/package.json').version")"
-                fi
+        - name: Setup Node.js
+          if: inputs.node-version != ''
+          uses: actions/setup-node@v6
+          with:
+              node-version: ${{ inputs.node-version }}
 
-                echo "Installing hevi@$VERSION"
-                npm install --global --no-fund --no-audit "hevi@$VERSION"
+        - name: Install hevi dependencies
+          shell: bash
+          run: npm ci --ignore-scripts
+          working-directory: ${{ github.action_path }}
 
-        -   name: Versionize
-            if: inputs.versionize == 'true'
-            shell: bash
-            env:
-                INPUT_DIRECTORY: ${{ inputs.directory }}
-                INPUT_VERSION: ${{ inputs.version }}
-                INPUT_DRY_RUN: ${{ inputs.dry-run }}
-            run: |
-                ARGS=()
-                if [ -n "$INPUT_VERSION" ]; then
-                    ARGS+=(--version "$INPUT_VERSION")
-                fi
-                if [ "$INPUT_DRY_RUN" = "true" ]; then
-                    ARGS+=(--dryRun)
-                fi
+        - name: Build hevi
+          shell: bash
+          run: npm run build
+          working-directory: ${{ github.action_path }}
 
-                hevi versionize "$INPUT_DIRECTORY" "${ARGS[@]}"
+        - name: Versionize charts
+          if: inputs.versionize == 'true'
+          shell: bash
+          run: |
+              args=""
+              if [ -n "${{ inputs.version }}" ]; then args="$args --version ${{ inputs.version }}"; fi
+              if [ "${{ inputs['dry-run'] }}" = "true" ]; then args="$args --dryRun"; fi
 
-        -   name: Package
-            if: inputs.package == 'true'
-            shell: bash
-            env:
-                INPUT_DIRECTORY: ${{ inputs.directory }}
-            run: |
-                hevi package "$INPUT_DIRECTORY"
+              node "${{ github.action_path }}/dist/cli.mjs" versionize "${{ inputs.directory }}" $args
 
-        -   name: Release
-            if: inputs.release == 'true'
-            shell: bash
-            env:
-                INPUT_DIRECTORY: ${{ inputs.directory }}
-                INPUT_OWNER: ${{ inputs.release-owner }}
-                INPUT_REPO: ${{ inputs.release-repo }}
-                INPUT_BRANCH: ${{ inputs.release-branch }}
-                GITHUB_TOKEN: ${{ inputs.token }}
-            run: |
-                ARGS=()
-                if [ -n "$INPUT_OWNER" ]; then
-                    ARGS+=(--owner "$INPUT_OWNER")
-                fi
-                if [ -n "$INPUT_REPO" ]; then
-                    ARGS+=(--repo "$INPUT_REPO")
-                fi
-                if [ -n "$INPUT_BRANCH" ]; then
-                    ARGS+=(--branch "$INPUT_BRANCH")
-                fi
+        - name: Package charts
+          if: inputs.package == 'true'
+          shell: bash
+          run: |
+              node "${{ github.action_path }}/dist/cli.mjs" package "${{ inputs.directory }}"
 
-                hevi release "$INPUT_DIRECTORY" "${ARGS[@]}"
+        - name: Release charts
+          if: inputs.release == 'true'
+          shell: bash
+          env:
+              GITHUB_TOKEN: ${{ inputs.token }}
+          run: |
+              args=""
+              if [ -n "${{ inputs['release-owner'] }}" ]; then args="$args --owner ${{ inputs['release-owner'] }}"; fi
+              if [ -n "${{ inputs['release-repo'] }}" ]; then args="$args --repo ${{ inputs['release-repo'] }}"; fi
+              if [ -n "${{ inputs['release-branch'] }}" ]; then args="$args --branch ${{ inputs['release-branch'] }}"; fi
 
-        -   name: Push
-            if: inputs.push == 'true'
-            shell: bash
-            env:
-                INPUT_DIRECTORY: ${{ inputs.directory }}
-                INPUT_HOST: ${{ inputs.push-host }}
-                INPUT_USERNAME: ${{ inputs.push-username }}
-                INPUT_PASSWORD: ${{ inputs.push-password }}
-            run: |
-                hevi push "$INPUT_DIRECTORY" \
-                    --host "$INPUT_HOST" \
-                    --username "$INPUT_USERNAME" \
-                    --password "$INPUT_PASSWORD"
+              node "${{ github.action_path }}/dist/cli.mjs" release "${{ inputs.directory }}" $args
+
+        - name: Push charts
+          if: inputs.push == 'true'
+          shell: bash
+          env:
+              PUSH_HOST: ${{ inputs['push-host'] }}
+              PUSH_USERNAME: ${{ inputs['push-username'] }}
+              PUSH_PASSWORD: ${{ inputs['push-password'] }}
+          run: |
+              node "${{ github.action_path }}/dist/cli.mjs" push "${{ inputs.directory }}" \
+                  --host "$PUSH_HOST" \
+                  --username "$PUSH_USERNAME" \
+                  --password "$PUSH_PASSWORD"

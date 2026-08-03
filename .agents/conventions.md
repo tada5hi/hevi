@@ -164,11 +164,14 @@ Version state lives in `.release-please-manifest.json`; config in `release-pleas
   Install → Build → (Lint, Test) on Node 24, with concurrency cancellation.
 - `.github/workflows/release.yml`: release-please + monoship, on push to `master`.
 - `.github/actions/{install,build}`: composite actions with npm and build caching.
-- `action.yml`: the public composite GitHub Action. It installs the published npm package
-  (defaulting to this repo's own version via `$GITHUB_ACTION_PATH/package.json`) and shells
-  out to the CLI, so there is nothing to bundle and no second repository to keep in sync.
-  Inputs are passed to the shell through `env:` rather than `${{ }}` interpolation, so
-  secrets and paths containing quotes or spaces cannot break or inject into the command.
+- `action.yml`: the public composite GitHub Action, following the same step layout as
+  [tada5hi/monoship](https://github.com/tada5hi/monoship/blob/master/action.yml):
+  optional `actions/setup-node`, then `npm ci --ignore-scripts` and `npm run build` in
+  `${{ github.action_path }}`, then `node "${{ github.action_path }}/dist/cli.mjs"`.
+  Building from the action's own checkout means the pinned ref is exactly the code that
+  runs, so there is nothing to bundle and no npm release to wait for.
+  Secrets are passed through `env:` rather than `${{ }}` interpolation, so a registry
+  password never reaches the command line.
 - `.github/dependabot.yml`: daily npm and GitHub Actions updates targeting `master`, grouped into
   `majorProd`, `majorDev` and `minorAndPatch`.
 
