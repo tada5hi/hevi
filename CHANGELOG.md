@@ -83,6 +83,13 @@
 * add git add command before commit ([d82cf63](https://github.com/tada5hi/hevi/commit/d82cf63f0c97fee749cd08cdaae7462f063936b0))
 * apply --follow-tags and --atomic option to git push ([0e88c6c](https://github.com/tada5hi/hevi/commit/0e88c6c9dff89c63c4a0322429b6640e617320c2))
 
+## [2.0.2](https://github.com/tada5hi/hevi/compare/v2.0.1...v2.0.2) (2026-08-04)
+
+
+### Bug Fixes
+
+* pass the target commit to cr upload ([#61](https://github.com/tada5hi/hevi/issues/61)) ([8733059](https://github.com/tada5hi/hevi/commit/873305946932e48c666edf531afa322993b6d1cd)), closes [#60](https://github.com/tada5hi/hevi/issues/60)
+
 ## [2.0.1](https://github.com/tada5hi/hevi/compare/v2.0.0...v2.0.1) (2026-08-03)
 
 
