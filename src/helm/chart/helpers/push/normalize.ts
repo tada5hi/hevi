@@ -17,6 +17,7 @@ export function normalizeHelmChartsReleaseOptions(input: HelmChartsReleaseOption
         owner: input.owner,
         repo: input.repo,
         branch: input.branch,
+        commit: input.commit,
         token: input.token,
         generateReleaseNotes: input.generateReleaseNotes ?? false,
     };
@@ -26,6 +27,10 @@ export function normalizeHelmChartsReleaseOptions(input: HelmChartsReleaseOption
          */
     if (!options.branch) {
         options.branch = 'gh-pages';
+    }
+
+    if (!options.commit) {
+        options.commit = process.env.GITHUB_SHA || undefined;
     }
 
     if (!options.token) {

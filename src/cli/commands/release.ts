@@ -35,6 +35,10 @@ export function defineCLIReleaseCommand() {
                 type: 'string',
                 description: 'Github pages branch',
             },
+            commit: {
+                type: 'string',
+                description: 'Target commit for the release (default: GITHUB_SHA)',
+            },
             token: {
                 type: 'string',
                 description: 'Git token',
@@ -55,6 +59,7 @@ export function defineCLIReleaseCommand() {
                     owner: ctx.args.owner,
                     token: ctx.args.token,
                     branch: ctx.args.branch,
+                    commit: ctx.args.commit,
                     generateReleaseNotes: ctx.args.generateReleaseNotes,
                 });
 
