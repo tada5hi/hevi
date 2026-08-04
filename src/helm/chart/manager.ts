@@ -234,10 +234,17 @@ export class HelmChartManager implements IHelmChartManager {
             uploadArgs.push('--pages-branch', options.branch);
         }
 
-        // --generate-release-notes is only accepted by upload, not by index
+        // --generate-release-notes and --commit are only accepted by upload, not by
+        // index (where the -c shorthand means --charts-repo)
         const uploadOnlyArgs : string[] = [];
         if (options.generateReleaseNotes) {
             uploadOnlyArgs.push('--generate-release-notes');
+        }
+
+        // chart-releaser forwards this as the release's target_commitish without a
+        // default, and GitHub answers 422 for an empty one
+        if (options.commit) {
+            uploadOnlyArgs.push('--commit', options.commit);
         }
 
         // release step

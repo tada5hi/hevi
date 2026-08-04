@@ -27,6 +27,16 @@ export type HelmChartsReleaseOptions = {
     branch?: string,
 
     /**
+     * Commit the created GitHub release points to (target_commitish).
+     *
+     * chart-releaser forwards this value unchecked, and the GitHub API rejects
+     * an empty one, so it must resolve to something.
+     *
+     * default: GITHUB_SHA
+     */
+    commit?: string,
+
+    /**
      * Let GitHub generate the name and body of the release from the merged
      * pull requests, instead of falling back to the chart description.
      *
@@ -58,6 +68,11 @@ export type HelmChartsReleaseOptionsNormalized = {
      * branch to upload charts + index file
      */
     branch?: string,
+
+    /**
+     * Commit the created GitHub release points to (target_commitish).
+     */
+    commit?: string,
 
     /**
      * Let GitHub generate the name and body of the release.

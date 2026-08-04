@@ -27,9 +27,15 @@ describe('helm > chart > manager > commands', () => {
     let helmBinary : FakeBinary;
     let helmChartReleaserBinary : FakeBinary;
     let manager : HelmChartManager;
+    let commitSha : string | undefined;
 
     beforeEach(async () => {
         cwd = process.cwd();
+
+        // the release args are asserted verbatim, and the workflow running these
+        // tests provides a GITHUB_SHA which would be picked up as --commit
+        commitSha = process.env.GITHUB_SHA;
+        delete process.env.GITHUB_SHA;
 
         directory = await fs.promises.realpath(
             await fs.promises.mkdtemp(path.join(os.tmpdir(), 'hevi-test-')),
@@ -48,6 +54,12 @@ describe('helm > chart > manager > commands', () => {
 
     afterEach(async () => {
         process.chdir(cwd);
+
+        if (typeof commitSha === 'undefined') {
+            delete process.env.GITHUB_SHA;
+        } else {
+            process.env.GITHUB_SHA = commitSha;
+        }
 
         await fs.promises.rm(directory, { recursive: true, force: true });
     });
@@ -186,6 +198,36 @@ describe('helm > chart > manager > commands', () => {
         // `cr index` rejects the flag, so it must not leak into the shared args
         expect(index?.[0]).toEqual('index');
         expect(index).not.toContain('--generate-release-notes');
+    });
+
+    it('should pass the commit to upload but never to index', async () => {
+        await manager.releaseCharts({
+            owner: 'tada5hi',
+            repo: 'hevi',
+            commit: 'abc123',
+        });
+
+        const [upload, index] = helmChartReleaserBinary.calls;
+
+        // an empty target_commitish makes the GitHub release API answer 422
+        expect(upload?.[0]).toEqual('upload');
+        expect(upload).toContain('--commit');
+        expect(upload?.[upload.indexOf('--commit') + 1]).toEqual('abc123');
+
+        // `cr index` has no --commit flag, and its -c shorthand means --charts-repo
+        expect(index?.[0]).toEqual('index');
+        expect(index).not.toContain('--commit');
+    });
+
+    it('should default the release commit to the github sha', async () => {
+        process.env.GITHUB_SHA = 'from-env';
+
+        await manager.releaseCharts({ owner: 'tada5hi', repo: 'hevi' });
+
+        const [upload] = helmChartReleaserBinary.calls;
+
+        expect(upload).toContain('--commit');
+        expect(upload?.[upload.indexOf('--commit') + 1]).toEqual('from-env');
     });
 
     it('should push charts to an oci registry', async () => {

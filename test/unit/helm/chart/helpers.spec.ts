@@ -22,6 +22,7 @@ const ENV_KEYS = [
     'GH_TOKEN',
     'GITHUB_REF',
     'GITHUB_REPOSITORY',
+    'GITHUB_SHA',
 ] as const;
 
 describe('helm > chart > helpers > version', () => {
@@ -66,6 +67,7 @@ describe('helm > chart > helpers > release', () => {
             owner: undefined,
             repo: undefined,
             branch: 'gh-pages',
+            commit: undefined,
             token: undefined,
             generateReleaseNotes: false,
         });
@@ -81,6 +83,7 @@ describe('helm > chart > helpers > release', () => {
             owner: 'tada5hi',
             repo: 'hevi',
             branch: 'pages',
+            commit: undefined,
             token: 'secret',
             generateReleaseNotes: false,
         });
@@ -94,6 +97,7 @@ describe('helm > chart > helpers > release', () => {
             owner: 'tada5hi',
             repo: 'hevi',
             branch: 'gh-pages',
+            commit: undefined,
             token: 'from-github-token',
             generateReleaseNotes: false,
         });
@@ -122,8 +126,21 @@ describe('helm > chart > helpers > release', () => {
             owner: 'other',
             repo: 'chart',
             branch: 'gh-pages',
+            commit: undefined,
             token: 'from-github-token',
             generateReleaseNotes: false,
         });
+    });
+
+    it('should default the commit to the github sha', () => {
+        process.env.GITHUB_SHA = 'abc123';
+
+        expect(normalizeHelmChartsReleaseOptions().commit).toEqual('abc123');
+    });
+
+    it('should not override an explicit commit', () => {
+        process.env.GITHUB_SHA = 'abc123';
+
+        expect(normalizeHelmChartsReleaseOptions({ commit: 'def456' }).commit).toEqual('def456');
     });
 });

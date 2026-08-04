@@ -145,10 +145,11 @@ npx hevi release <directory> \
 | `--owner`  | string | inferred   | GitHub user or organization.                                      |
 | `--repo`   | string | inferred   | GitHub repository name.                                           |
 | `--branch` | string | `gh-pages` | Branch the charts and `index.yaml` are published to.               |
+| `--commit` | string | `GITHUB_SHA` | Commit the created releases point to. Required outside of GitHub Actions. |
 | `--token`  | string | inferred   | Git token.                                                        |
 | `--generateReleaseNotes` | boolean | `false` | Let GitHub generate the release name and body from merged pull requests. |
 
-Inside GitHub Actions, `--owner`, `--repo` and `--token` are read from the environment
+Inside GitHub Actions, `--owner`, `--repo`, `--commit` and `--token` are read from the environment
 (see [Environment](#environment)), so they can usually be omitted. Existing releases are
 skipped, making re-runs safe.
 
@@ -188,6 +189,7 @@ versionize, package, release, push.
 | `release-owner`  | inferred       | GitHub owner.                                                      |
 | `release-repo`   | inferred       | GitHub repository name.                                            |
 | `release-branch` | `gh-pages`     | Branch the charts and `index.yaml` are published to.               |
+| `release-commit` | `github.sha`   | Commit the created releases point to.                              |
 | `release-generate-notes` | `false` | Let GitHub generate the release name and body.               |
 | `token`          | `github.token` | Token used to interact with GitHub.                                |
 | `push`           | `false`        | Push the packaged charts to an OCI registry.                       |
@@ -348,6 +350,7 @@ A `.env` file is loaded automatically by the CLI.
 | `GITHUB_TOKEN`      | `release` | Git token; preferred over `GH_TOKEN`.                            |
 | `GH_TOKEN`          | `release` | Fallback git token.                                              |
 | `GITHUB_REPOSITORY` | `release` | Source of `owner`/`repo` when they are not passed explicitly.    |
+| `GITHUB_SHA`        | `release` | Source of `commit` when it is not passed explicitly.             |
 | `RUNNER_TOOL_CACHE` | all       | Cache directory for downloaded binaries; defaults to the temp dir.|
 
 ## License
