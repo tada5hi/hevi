@@ -50,7 +50,7 @@
         "consola": "^3.4.2",
         "dotenv": "^17.4.2",
         "graph-data-structure": "^4.5.0",
-        "hapic": "^3.0.1",
+        "hapic": "^3.0.2",
         "locter": "^4.1.0",
         "semver": "^7.8.5",
         "tar": "^7.5.22",
