@@ -46,6 +46,7 @@ export function defineCLIPushCommand() {
         },
         async setup(ctx) {
             const manager = new HelmChartManager();
+
             await manager.loadMany(ctx.args.directory);
 
             try {

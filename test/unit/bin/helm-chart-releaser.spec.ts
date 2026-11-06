@@ -71,6 +71,7 @@ describe('binary > helm-chart-releaser', () => {
         });
 
         const response = await hapic.head(bin.downloadURL);
+
         expect(response.status).toEqual(200);
     });
 
@@ -81,6 +82,7 @@ describe('binary > helm-chart-releaser', () => {
         });
 
         const response = await hapic.head(bin.downloadURL);
+
         expect(response.status).toEqual(200);
     });
 });

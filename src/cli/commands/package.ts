@@ -26,10 +26,12 @@ export function defineCLIPackageCommand() {
         },
         async setup(ctx) {
             const manager = new HelmChartManager();
+
             await manager.loadMany(ctx.args.directory);
 
             try {
                 const charts = await manager.packageCharts();
+
                 for (const chart of charts) {
                     consola.success(`packaged chart ${chart.data.name} (${chart.pathRelativePosix})`);
                 }

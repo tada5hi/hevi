@@ -50,9 +50,11 @@ export class HelmBinary extends Binary {
 
     get downloadURLFileName() {
         const arch = this.arch === 'x64' ? 'amd64' : this.arch;
+
         if (this.platform === 'win32') {
             return `helm-v${this.version}-windows-${arch}.zip`;
         }
+
         return `helm-v${this.version}-${this.platform}-${arch}.tar.gz`;
     }
 

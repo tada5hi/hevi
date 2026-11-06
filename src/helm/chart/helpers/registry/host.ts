@@ -19,11 +19,13 @@ export function extractRegistryHost(input: string) : string {
     let value = input.trim();
 
     const schemeIndex = value.indexOf('://');
+
     if (schemeIndex !== -1) {
         value = value.substring(schemeIndex + 3);
     }
 
     const slashIndex = value.indexOf('/');
+
     if (slashIndex !== -1) {
         value = value.substring(0, slashIndex);
     }

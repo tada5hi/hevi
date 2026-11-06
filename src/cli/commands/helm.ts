@@ -22,6 +22,7 @@ export function defineCLIHelmCommand() {
             const binary = new HelmBinary();
 
             const output = await binary.execute(ctx.rawArgs);
+
             console.log(output);
         },
     });

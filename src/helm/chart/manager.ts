@@ -60,16 +60,19 @@ export class HelmChartManager implements IHelmChartManager {
         const data = await read(filePath);
         const container = new HelmChartContainer(data, { path: filePath });
 
-        if (!this.items[container.directoryPath]) {
-            this.items[container.directoryPath] = container;
+        if (this.items[container.directoryPath]) {
+            return;
+        }
 
-            this.graph.addNode(container.directoryPath);
+        this.items[container.directoryPath] = container;
 
-            for (const dependency of container.dependencies) {
-                const dependencyRepositoryPath = dependency.repositoryFilePath;
-                if (dependencyRepositoryPath) {
-                    this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
-                }
+        this.graph.addNode(container.directoryPath);
+
+        for (const dependency of container.dependencies) {
+            const dependencyRepositoryPath = dependency.repositoryFilePath;
+
+            if (dependencyRepositoryPath) {
+                this.graph.addEdge(container.directoryPath, dependencyRepositoryPath);
             }
         }
     }
@@ -109,6 +112,7 @@ export class HelmChartManager implements IHelmChartManager {
 
         for (const chartPath of graphFlat) {
             const chart = this.items[chartPath];
+
             if (!chart) {
                 continue;
             }
@@ -120,9 +124,11 @@ export class HelmChartManager implements IHelmChartManager {
             }
 
             const adjacentPaths = this.graph.adjacent(chartPath);
+
             if (adjacentPaths) {
                 adjacentPaths.forEach((adjacentPath) => {
                     const adjacentChart = this.items[adjacentPath];
+
                     if (adjacentChart) {
                         for (const dependency of chart.dependencies) {
                             if (dependency.repositoryFilePath === adjacentChart.directoryPath) {
@@ -158,12 +164,14 @@ export class HelmChartManager implements IHelmChartManager {
 
         for (const chartPath of graphFlat) {
             const chart = this.items[chartPath];
+
             if (!chart) {
                 continue;
             }
 
             for (const dependency of chart.dependencies) {
                 const { repositoryWebURL } = dependency;
+
                 if (repositoryWebURL) {
                     const webURL = new URL(repositoryWebURL);
                     const webURLKey = `hevi:${webURL.hostname}${webURL.pathname.replaceAll('/', '.')}`;
@@ -230,6 +238,7 @@ export class HelmChartManager implements IHelmChartManager {
         if (options.token) {
             uploadArgs.push('-t', options.token);
         }
+
         if (options.branch) {
             uploadArgs.push('--pages-branch', options.branch);
         }
@@ -237,6 +246,7 @@ export class HelmChartManager implements IHelmChartManager {
         // --generate-release-notes and --commit are only accepted by upload, not by
         // index (where the -c shorthand means --charts-repo)
         const uploadOnlyArgs : string[] = [];
+
         if (options.generateReleaseNotes) {
             uploadOnlyArgs.push('--generate-release-notes');
         }
@@ -301,12 +311,14 @@ export class HelmChartManager implements IHelmChartManager {
 
         for (const chartPath of graphFlat) {
             const chart = this.items[chartPath];
+
             if (!chart) {
                 continue;
             }
 
             if (options.skipExisting) {
                 const exists = await this.isChartPresent(options.host, chart.data.name, chart.data.version);
+
                 if (exists) {
                     continue;
                 }

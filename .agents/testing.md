@@ -2,7 +2,7 @@
 
 ## Setup
 
-- **Runner**: [Vitest](https://vitest.dev) 4
+- **Runner**: [Vitest](https://vitest.dev) 5
 - **Test location**: `test/unit/**/*.{test,spec}.{js,ts}`
 - **Config**: `test/vitest.config.ts`
 - **Prerequisite**: none. No Helm installation is required, though some specs perform live HTTP `HEAD`

@@ -54,6 +54,7 @@ describe('helm > chart > helpers > release', () => {
     afterEach(() => {
         for (const key of ENV_KEYS) {
             const value = env[key];
+
             if (typeof value === 'undefined') {
                 delete process.env[key];
             } else {

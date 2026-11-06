@@ -49,9 +49,11 @@ export class HelmChartReleaserBinary extends Binary {
 
     get downloadURLFileName() {
         const arch = this.arch === 'x64' ? 'amd64' : this.arch;
+
         if (this.platform === 'win32') {
             return `chart-releaser_${this.version}_windows_${arch}.zip`;
         }
+
         return `chart-releaser_${this.version}_${this.platform}_${arch}.tar.gz`;
     }
 

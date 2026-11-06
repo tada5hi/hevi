@@ -22,6 +22,7 @@ export function defineCLIHelmChartReleaserCommand() {
             const binary = new HelmChartReleaserBinary();
 
             const output = await binary.execute(ctx.rawArgs);
+
             console.log(output);
         },
     });

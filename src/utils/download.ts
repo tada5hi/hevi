@@ -22,6 +22,7 @@ type DownloaderOptions = {
 
 export async function download(options: DownloaderOptions) {
     let destinationPath : string;
+
     if (path.isAbsolute(options.directory)) {
         destinationPath = options.directory;
     } else {
@@ -34,6 +35,7 @@ export async function download(options: DownloaderOptions) {
     const readStream = stream.Readable.fromWeb(response.data as any);
 
     const isZip = options.url.substring(options.url.length - 3) === 'zip';
+
     if (isZip) {
         await unpackZip(readStream, destinationPath, {
             filter: options.filter,
