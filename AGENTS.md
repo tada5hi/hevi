@@ -23,7 +23,8 @@ npm run lint:fix
 npx tsc --noEmit        # typecheck only (the build does not typecheck)
 ```
 
-- **Node.js**: `>=22`
+- **Node.js (package runtime)**: `>=22`
+- **Node.js (development tooling)**: `^24.11.0 || >=26.0.0`; `.nvmrc` selects Node 24.
 - **Package manager**: npm
 - **Module format**: ESM only (`"type": "module"`), there is no CJS output
 - **Build**: [tsdown](https://tsdown.dev) (rolldown), declarations emitted as `.d.mts`
