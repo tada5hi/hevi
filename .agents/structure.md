@@ -74,7 +74,7 @@ hevi/
 | `graph-data-structure` | `Graph` + `topologicalSort` for chart dependency ordering        |
 | `semver`               | Version inspection and increments                                |
 | `tinyexec`             | Spawning `helm` / `cr`                                           |
-| `hapic`                | HTTP client used to download binaries                            |
+| `hapic`                | HTTP client for downloading binaries                            |
 | `tar`, `yauzl`         | Extracting `.tar.gz` / `.zip` binary archives                    |
 | `dotenv`               | Loading `.env` in the CLI entry point                            |
 | `@actions/github`      | Inferring owner/repo from the GitHub Actions context             |

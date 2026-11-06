@@ -35,6 +35,7 @@ export abstract class Binary implements IBinary {
         const options = this.buildShellOptions();
 
         let execPath :string | undefined;
+
         try {
             // windows has no which(1)
             execPath = await executeShellCommand(

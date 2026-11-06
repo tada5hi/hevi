@@ -103,6 +103,7 @@ describe('helm > chart > manager > commands', () => {
 
     it('should register and remove web repositories of dependencies', async () => {
         const chartPath = path.join(directory, 'baz', 'Chart.yaml');
+
         await fs.promises.mkdir(path.dirname(chartPath), { recursive: true });
         await fs.promises.writeFile(chartPath, [
             'apiVersion: v2',
@@ -118,6 +119,7 @@ describe('helm > chart > manager > commands', () => {
         ].join('\n'));
 
         const scoped = new HelmChartManager({ helmBinary, helmChartReleaserBinary });
+
         await scoped.load(chartPath);
 
         await scoped.packageCharts();

@@ -43,6 +43,7 @@ export class HelmChartContainer implements IHelmChartContainer {
         if (data.dependencies) {
             for (const dependency of data.dependencies) {
                 const dependencyContainer = new HelmChartDependencyContainer(dependency, this);
+
                 this.dependencies.push(dependencyContainer);
             }
         }

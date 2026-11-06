@@ -40,9 +40,11 @@ describe('helm > chart > manager > save', () => {
 
     it('should write bumped versions to the file system', async () => {
         const manager = new HelmChartManager();
+
         await manager.loadMany(directory);
 
         const charts = await manager.versionizeCharts();
+
         expect(charts.length).toEqual(2);
 
         const foo = await readChart(path.join(directory, 'foo', 'Chart.yaml'));
@@ -58,6 +60,7 @@ describe('helm > chart > manager > save', () => {
 
     it('should write an explicit version to the file system', async () => {
         const manager = new HelmChartManager();
+
         await manager.loadMany(directory);
 
         await manager.versionizeCharts({ version: '9.8.7' });
@@ -72,6 +75,7 @@ describe('helm > chart > manager > save', () => {
 
     it('should load a single chart', async () => {
         const manager = new HelmChartManager();
+
         await manager.load(path.join(directory, 'bar', 'Chart.yaml'));
 
         const charts = await manager.versionizeCharts({ dryRun: true });

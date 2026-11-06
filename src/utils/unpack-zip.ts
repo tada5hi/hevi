@@ -27,6 +27,7 @@ export async function unpackZip(
         fromBuffer(buffer, { lazyEntries: true }, (err, zipFile) => {
             if (err) {
                 reject(err);
+
                 return;
             }
 
@@ -43,6 +44,7 @@ export async function unpackZip(
                     ) => {
                         if (entryErr) {
                             reject(entryErr);
+
                             return;
                         }
 
