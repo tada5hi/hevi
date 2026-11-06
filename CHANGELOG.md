@@ -83,6 +83,13 @@
 * add git add command before commit ([d82cf63](https://github.com/tada5hi/hevi/commit/d82cf63f0c97fee749cd08cdaae7462f063936b0))
 * apply --follow-tags and --atomic option to git push ([0e88c6c](https://github.com/tada5hi/hevi/commit/0e88c6c9dff89c63c4a0322429b6640e617320c2))
 
+## [2.0.3](https://github.com/tada5hi/hevi/compare/v2.0.2...v2.0.3) (2026-11-06)
+
+
+### Bug Fixes
+
+* **deps:** bump the minorandpatch group across 1 directory with 7 updates ([#86](https://github.com/tada5hi/hevi/issues/86)) ([ed399aa](https://github.com/tada5hi/hevi/commit/ed399aa2f5ff8d307bde2076ec0092bde3d3f89a))
+
 ## [2.0.2](https://github.com/tada5hi/hevi/compare/v2.0.1...v2.0.2) (2026-08-04)
 
 
