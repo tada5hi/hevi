@@ -58,6 +58,9 @@
         "yaml": "^2.9.0",
         "yauzl": "^3.4.0"
     },
+    "overrides": {
+        "@vitest/mocker@<4.1.12": "4.1.12"
+    },
     "devEngines": {
         "runtime": {
             "name": "node",
